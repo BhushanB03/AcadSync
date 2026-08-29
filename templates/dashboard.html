@@ -1,0 +1,31 @@
+{% extends "base.html" %}
+
+{% block title %}Dashboard — AcadSync{% endblock %}
+
+{% block extra_css %}
+<style>
+    .dashboard {
+        background: white;
+        padding: 2rem;
+        border-radius: 8px;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    }
+    .dashboard h1 {
+        color: #2c3e50;
+        margin-bottom: 1rem;
+    }
+    .dashboard p {
+        color: #666;
+        margin-bottom: 1rem;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="dashboard">
+    <h1>Welcome, {{ user.name }}!</h1>
+    <p>You are logged in as <strong>{{ user.email }}</strong></p>
+    <p>Account created on <strong>{{ user.created_at.strftime('%B %d, %Y') }}</strong></p>
+    <p>This is your dashboard. More features coming soon!</p>
+</div>
+{% endblock %}
