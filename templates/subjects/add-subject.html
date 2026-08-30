@@ -1,0 +1,223 @@
+{% extends "base.html" %}
+
+{% block title %}Add Subject — AcadSync{% endblock %}
+
+{% block extra_css %}
+<style>
+    .form-container {
+        max-width: 600px;
+        margin: 2rem auto;
+        background: white;
+        padding: 2rem;
+        border-radius: 8px;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    }
+    .form-container h1 {
+        color: #2c3e50;
+        margin-bottom: 1.5rem;
+        text-align: center;
+    }
+    .form-group {
+        margin-bottom: 1.5rem;
+    }
+    .form-group label {
+        display: block;
+        margin-bottom: 0.5rem;
+        font-weight: 500;
+        color: #555;
+    }
+    .form-group input,
+    .form-group select {
+        width: 100%;
+        padding: 0.75rem;
+        border: 1px solid #ddd;
+        border-radius: 4px;
+        font-size: 1rem;
+        transition: border-color 0.3s;
+        font-family: inherit;
+    }
+    .form-group input:focus,
+    .form-group select:focus {
+        outline: none;
+        border-color: #3498db;
+        box-shadow: 0 0 5px rgba(52, 152, 219, 0.3);
+    }
+    /* Custom University Toggle Switch */
+    .toggle-group {
+        margin-bottom: 1.5rem;
+    }
+    .toggle-label {
+        display: block;
+        margin-bottom: 0.75rem;
+        font-weight: 500;
+        color: #555;
+    }
+    .toggle-container {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+    }
+    .university-label {
+        font-size: 0.95rem;
+        font-weight: 500;
+        color: #555;
+    }
+    .toggle-switch {
+        position: relative;
+        display: inline-block;
+        width: 80px;
+        height: 40px;
+    }
+    .toggle-switch input {
+        opacity: 0;
+        width: 0;
+        height: 0;
+    }
+    .slider {
+        position: absolute;
+        cursor: pointer;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background-color: #e74c3c;
+        border: 2px solid #f1c40f;
+        transition: 0.3s ease;
+        border-radius: 40px;
+    }
+    .slider:before {
+        position: absolute;
+        content: "";
+        height: 32px;
+        width: 32px;
+        left: 4px;
+        bottom: 4px;
+        background-color: white;
+        transition: 0.3s ease;
+        border-radius: 50%;
+    }
+    input:checked + .slider {
+        background-color: #3498db;
+        border: 2px solid #f1c40f;
+    }
+    input:checked + .slider:before {
+        transform: translateX(40px);
+    }
+    .toggle-labels {
+        display: flex;
+        justify-content: space-between;
+        font-size: 0.85rem;
+        font-weight: 600;
+        color: #7f8c8d;
+        margin-top: 0.5rem;
+        padding: 0 2px;
+    }
+    .toggle-labels span.left {
+        color: #3498db;
+    }
+    .toggle-labels span.right {
+        color: #e74c3c;
+    }
+    input:checked + .slider ~ .toggle-labels span.left {
+        color: #7f8c8d;
+    }
+    input:checked + .slider ~ .toggle-labels span.right {
+        color: #e74c3c;
+    }
+    .form-actions {
+        display: flex;
+        gap: 1rem;
+        margin-top: 2rem;
+    }
+    .btn {
+        flex: 1;
+        padding: 0.75rem;
+        border: none;
+        border-radius: 4px;
+        font-size: 1rem;
+        font-weight: 600;
+        cursor: pointer;
+        transition: background-color 0.3s;
+        text-decoration: none;
+        text-align: center;
+    }
+    .btn-primary {
+        background-color: #27ae60;
+        color: white;
+    }
+    .btn-primary:hover {
+        background-color: #229954;
+    }
+    .btn-secondary {
+        background-color: #95a5a6;
+        color: white;
+    }
+    .btn-secondary:hover {
+        background-color: #7f8c8d;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="form-container">
+    <h1>Add New Subject</h1>
+
+    <form method="POST" action="{{ url_for('subjects.add') }}">
+        <!-- CSRF Token -->
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+
+        <!-- Subject Name -->
+        <div class="form-group">
+            <label for="name">Subject Name *</label>
+            <input type="text" id="name" name="name" placeholder="e.g., Data Structures" required>
+        </div>
+
+        <!-- Subject Code -->
+        <div class="form-group">
+            <label for="code">Subject Code *</label>
+            <input type="text" id="code" name="code" placeholder="e.g., CS201" required>
+        </div>
+
+        <!-- Term -->
+        <div class="form-group">
+            <label for="term">Term *</label>
+            <input type="text" id="term" name="term" placeholder="e.g., January 2027" required>
+        </div>
+
+        <!-- Subject Type -->
+        <div class="form-group">
+            <label for="subject_type">Subject Type *</label>
+            <select id="subject_type" name="subject_type" required>
+                <option value="">-- Select Type --</option>
+                <option value="Theory">Theory</option>
+                <option value="Lab">Lab</option>
+                <option value="Seminar">Seminar</option>
+                <option value="Project">Project</option>
+            </select>
+        </div>
+
+        <!-- University Toggle Switch -->
+        <div class="toggle-group">
+            <label class="toggle-label">University</label>
+            <div class="toggle-container">
+                <span class="university-label">IITM</span>
+                <label class="toggle-switch">
+                    <input type="checkbox" id="university" name="university" value="on">
+                    <span class="slider"></span>
+                    <div class="toggle-labels">
+                        <span class="left">IITM</span>
+                        <span class="right">VIT</span>
+                    </div>
+                </label>
+                <span class="university-label">VIT</span>
+            </div>
+        </div>
+
+        <!-- Form Actions -->
+        <div class="form-actions">
+            <button type="submit" class="btn btn-primary">Add Subject</button>
+            <a href="{{ url_for('subjects.index') }}" class="btn btn-secondary">Cancel</a>
+        </div>
+    </form>
+</div>
+{% endblock %}

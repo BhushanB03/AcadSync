@@ -2,6 +2,7 @@ from flask import Blueprint, render_template, request, redirect, url_for, flash
 from flask_login import login_user, logout_user, login_required, current_user
 from app.extensions import db
 from app.models.user import User
+from app.models.subject import Subject
 
 auth_bp = Blueprint('auth', __name__)
 
@@ -116,7 +117,23 @@ def logout():
 @login_required
 def dashboard():
     """
-    Simple dashboard for authenticated users.
-    (Placeholder for future development)
+    Dashboard for authenticated users showing account summary and active subjects.
+    
+    Fetches current user's active subjects (status='Active' or 'Completed')
+    and splits them by university (VIT or IITM) for display on the dashboard.
     """
-    return render_template('dashboard.html', user=current_user)
+    # Fetch all active subjects for the current user
+    active_subjects = Subject.query.filter_by(user_id=current_user.id).filter(
+        Subject.status.in_(['Active', 'Completed'])
+    ).order_by(Subject.created_at.desc()).all()
+    
+    # Split subjects by university
+    vit_subjects = [s for s in active_subjects if s.university == 'VIT']
+    iitm_subjects = [s for s in active_subjects if s.university == 'IITM']
+    
+    return render_template(
+        'dashboard.html',
+        user=current_user,
+        vit_subjects=vit_subjects,
+        iitm_subjects=iitm_subjects
+    )

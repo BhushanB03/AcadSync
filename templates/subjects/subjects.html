@@ -1,0 +1,321 @@
+{% extends "base.html" %}
+
+{% block title %}My Subjects — AcadSync{% endblock %}
+
+{% block extra_css %}
+<style>
+    .subjects-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 1.5rem;
+        flex-wrap: wrap;
+        gap: 1rem;
+    }
+    .subjects-header h1 {
+        color: #2c3e50;
+        margin: 0;
+    }
+    .add-subject-btn {
+        background-color: #27ae60;
+        color: white;
+        padding: 0.75rem 1.5rem;
+        border: none;
+        border-radius: 4px;
+        text-decoration: none;
+        font-weight: 600;
+        transition: background-color 0.3s;
+        display: inline-block;
+    }
+    .add-subject-btn:hover {
+        background-color: #229954;
+    }
+    
+    /* Tab Navigation Styles */
+    .view-tabs {
+        display: flex;
+        gap: 0;
+        margin-bottom: 2rem;
+        border-bottom: 2px solid #ecf0f1;
+    }
+    .view-tab {
+        padding: 1rem 1.5rem;
+        border: none;
+        background-color: transparent;
+        color: #7f8c8d;
+        font-size: 1rem;
+        font-weight: 500;
+        cursor: pointer;
+        text-decoration: none;
+        transition: all 0.3s;
+        border-bottom: 3px solid transparent;
+        margin-bottom: -2px;
+    }
+    .view-tab:hover {
+        color: #2c3e50;
+    }
+    .view-tab.active {
+        color: #3498db;
+        border-bottom-color: #3498db;
+    }
+    
+    .filter-section {
+        margin-bottom: 1.5rem;
+        display: flex;
+        gap: 1rem;
+        flex-wrap: wrap;
+    }
+    .filter-btn {
+        padding: 0.5rem 1rem;
+        border: 1px solid #ddd;
+        background-color: white;
+        border-radius: 4px;
+        cursor: pointer;
+        transition: all 0.3s;
+        text-decoration: none;
+        color: #555;
+    }
+    .filter-btn:hover {
+        border-color: #3498db;
+        color: #3498db;
+    }
+    .filter-btn.active {
+        background-color: #3498db;
+        color: white;
+        border-color: #3498db;
+    }
+    .subjects-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+        gap: 1.5rem;
+    }
+    .subject-card {
+        background: white;
+        border-radius: 8px;
+        padding: 1.5rem;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        transition: transform 0.3s, box-shadow 0.3s;
+        display: flex;
+        flex-direction: column;
+    }
+    .subject-card:hover {
+        transform: translateY(-4px);
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    }
+    .subject-card-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: start;
+        margin-bottom: 1rem;
+    }
+    .subject-info h3 {
+        margin: 0 0 0.25rem 0;
+        color: #2c3e50;
+        font-size: 1.2rem;
+    }
+    .subject-code {
+        color: #7f8c8d;
+        font-size: 0.9rem;
+        margin-bottom: 0.5rem;
+    }
+    .university-badge {
+        display: inline-block;
+        padding: 0.25rem 0.75rem;
+        border-radius: 20px;
+        font-size: 0.85rem;
+        font-weight: 600;
+        color: white;
+    }
+    .university-badge.vit {
+        background-color: #e74c3c;
+    }
+    .university-badge.iitm {
+        background-color: #3498db;
+    }
+    .subject-details {
+        margin: 1rem 0;
+        font-size: 0.95rem;
+        color: #555;
+    }
+    .detail-row {
+        display: flex;
+        justify-content: space-between;
+        margin-bottom: 0.5rem;
+    }
+    .detail-label {
+        font-weight: 500;
+        color: #7f8c8d;
+    }
+    .status-badge {
+        display: inline-block;
+        padding: 0.25rem 0.75rem;
+        border-radius: 4px;
+        font-size: 0.85rem;
+        font-weight: 600;
+        color: white;
+    }
+    .status-active {
+        background-color: #27ae60;
+    }
+    .status-completed {
+        background-color: #3498db;
+    }
+    .status-archived {
+        background-color: #95a5a6;
+    }
+    .card-actions {
+        display: flex;
+        gap: 0.5rem;
+        margin-top: auto;
+        padding-top: 1rem;
+        border-top: 1px solid #ecf0f1;
+        flex-wrap: wrap;
+    }
+    .card-action-btn {
+        flex: 1;
+        min-width: 80px;
+        padding: 0.5rem;
+        border: none;
+        border-radius: 4px;
+        text-decoration: none;
+        font-weight: 500;
+        cursor: pointer;
+        text-align: center;
+        font-size: 0.9rem;
+        transition: background-color 0.3s;
+    }
+    .view-btn {
+        background-color: #3498db;
+        color: white;
+    }
+    .view-btn:hover {
+        background-color: #2980b9;
+    }
+    .edit-btn {
+        background-color: #f39c12;
+        color: white;
+    }
+    .edit-btn:hover {
+        background-color: #e67e22;
+    }
+    .unarchive-btn {
+        background-color: #27ae60;
+        color: white;
+    }
+    .unarchive-btn:hover {
+        background-color: #229954;
+    }
+    .delete-btn {
+        background-color: #e74c3c;
+        color: white;
+    }
+    .delete-btn:hover {
+        background-color: #c0392b;
+    }
+    .empty-state {
+        text-align: center;
+        padding: 3rem 1rem;
+        color: #7f8c8d;
+    }
+    .empty-state h2 {
+        color: #95a5a6;
+        margin-bottom: 1rem;
+    }
+    .empty-state p {
+        margin-bottom: 1.5rem;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="subjects-header">
+    <h1>My Subjects</h1>
+    <a href="{{ url_for('subjects.add') }}" class="add-subject-btn">+ Add Subject</a>
+</div>
+
+<!-- View Tabs (Active vs Archived) -->
+<div class="view-tabs">
+    <a href="{{ url_for('subjects.index', view='active') }}" 
+       class="view-tab {% if current_view == 'active' %}active{% endif %}">
+        Active Subjects
+    </a>
+    <a href="{{ url_for('subjects.index', view='archived') }}" 
+       class="view-tab {% if current_view == 'archived' %}active{% endif %}">
+        Previous Subjects
+    </a>
+</div>
+
+{% if subjects %}
+    <!-- Filter Section (by university) -->
+    <div class="filter-section">
+        <a href="{{ url_for('subjects.index', view=current_view) }}" 
+           class="filter-btn {% if not filter_university %}active{% endif %}">All Universities</a>
+        <a href="{{ url_for('subjects.index', view=current_view, university='VIT') }}" 
+           class="filter-btn {% if filter_university == 'VIT' %}active{% endif %}">VIT</a>
+        <a href="{{ url_for('subjects.index', view=current_view, university='IITM') }}" 
+           class="filter-btn {% if filter_university == 'IITM' %}active{% endif %}">IITM</a>
+    </div>
+
+    <!-- Subjects Grid -->
+    <div class="subjects-grid">
+        {% for subject in subjects %}
+        <div class="subject-card">
+            <div class="subject-card-header">
+                <div class="subject-info">
+                    <h3>{{ subject.name }}</h3>
+                    <div class="subject-code">{{ subject.code }}</div>
+                    <span class="university-badge {% if subject.university == 'VIT' %}vit{% else %}iitm{% endif %}">
+                        {{ subject.university }}
+                    </span>
+                </div>
+            </div>
+
+            <div class="subject-details">
+                <div class="detail-row">
+                    <span class="detail-label">Term:</span>
+                    <span>{{ subject.term }}</span>
+                </div>
+                <div class="detail-row">
+                    <span class="detail-label">Type:</span>
+                    <span>{{ subject.subject_type }}</span>
+                </div>
+                <div class="detail-row">
+                    <span class="detail-label">Status:</span>
+                    <span class="status-badge status-{{ subject.status.lower() }}">{{ subject.status }}</span>
+                </div>
+            </div>
+
+            <div class="card-actions">
+                <a href="{{ url_for('subjects.detail', subject_id=subject.id) }}" class="card-action-btn view-btn">View</a>
+                <a href="{{ url_for('subjects.edit', subject_id=subject.id) }}" class="card-action-btn edit-btn">Edit</a>
+                
+                <!-- Unarchive button (only shown on Archived tab) -->
+                {% if current_view == 'archived' %}
+                <form method="POST" action="{{ url_for('subjects.unarchive', subject_id=subject.id) }}" style="flex: 1;">
+                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                    <button type="submit" class="card-action-btn unarchive-btn">Restore</button>
+                </form>
+                {% endif %}
+                
+                <form method="POST" action="{{ url_for('subjects.delete', subject_id=subject.id) }}" style="flex: 1;">
+                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                    <button type="submit" class="card-action-btn delete-btn" onclick="return confirm('Are you sure you want to delete this subject?');">Delete</button>
+                </form>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+{% else %}
+    <!-- Empty State (context-aware) -->
+    <div class="empty-state">
+        {% if current_view == 'active' %}
+            <h2>No active subjects yet</h2>
+            <p>Get started by creating your first subject. You can add subjects for different universities and terms.</p>
+        {% else %}
+            <h2>No previous subjects</h2>
+            <p>Subjects you archive will appear here. You can restore them anytime.</p>
+        {% endif %}
+        <a href="{{ url_for('subjects.add') }}" class="add-subject-btn">Create Your First Subject</a>
+    </div>
+{% endif %}
+{% endblock %}

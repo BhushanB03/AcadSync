@@ -1,0 +1,40 @@
+from app.extensions import db
+from datetime import datetime
+
+
+class Subject(db.Model):
+    """
+    Subject model representing an academic subject/course.
+    Each subject belongs to a user and stores university preference (VIT or IITM).
+    """
+    __tablename__ = 'subjects'
+
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False, index=True)
+    name = db.Column(db.String(150), nullable=False)
+    code = db.Column(db.String(50), nullable=False)
+    university = db.Column(db.String(10), nullable=False, default='VIT')  # 'VIT' or 'IITM'
+    term = db.Column(db.String(100), nullable=False)  # e.g., "January 2027"
+    subject_type = db.Column(db.String(50), nullable=False)  # e.g., "Theory", "Lab"
+    status = db.Column(db.String(20), nullable=False, default='Active')  # 'Active', 'Completed', 'Archived'
+    created_at = db.Column(db.DateTime, default=datetime.utcnow, nullable=False)
+    updated_at = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow, nullable=False)
+
+    # Relationship to User
+    user = db.relationship('User', backref='subjects', lazy=True)
+
+    def __repr__(self):
+        return f'<Subject {self.code} - {self.name}>'
+
+    def belongs_to_user(self, user_id):
+        """
+        Verify that this subject belongs to the given user.
+        Useful for ownership checks before edit/delete operations.
+        
+        Args:
+            user_id (int): The user ID to check against
+            
+        Returns:
+            bool: True if subject belongs to user, False otherwise
+        """
+        return self.user_id == user_id
