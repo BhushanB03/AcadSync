@@ -1,0 +1,583 @@
+{% extends "base.html" %}
+
+{% block title %}
+    {% if template %}Edit Template{% else %}Create Grade Template{% endif %}
+{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="page-header">
+        <h1>{% if template %}Edit Template{% else %}Create Grade Template{% endif %}</h1>
+    </div>
+
+    <form method="POST" class="template-form">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+
+        <!-- Basic Info -->
+        <div class="form-section">
+            <h3>Basic Information</h3>
+
+            <div class="form-group">
+                <label for="name">Template Name</label>
+                <input type="text" id="name" name="name" required value="{{ template.name if template else '' }}">
+            </div>
+
+            <div class="form-group">
+                <label for="university">University</label>
+                <select id="university" name="university" required>
+                    <option value="VIT" {% if template and template.university == 'VIT' %}selected{% endif %}>VIT</option>
+                    <option value="IITM" {% if template and template.university == 'IITM' %}selected{% endif %}>IITM</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label>Calculation Mode</label>
+                <div class="radio-group">
+                    <label class="radio-option">
+                        <input type="radio" name="calculation_mode" value="raw" {% if not template or template.calculation_mode != 'percentage' %}checked{% endif %}>
+                        <span>Raw Marks (use actual obtained marks directly)</span>
+                    </label>
+                    <label class="radio-option">
+                        <input type="radio" name="calculation_mode" value="percentage" {% if template and template.calculation_mode == 'percentage' %}checked{% endif %}>
+                        <span>Percentage (normalize each component to 0-100 first)</span>
+                    </label>
+                </div>
+                <small class="section-help">
+                    Raw Marks is best when max_marks already reflect component weight (for example VIT-style CA/FAT totals).
+                    Percentage mode is best when the formula uses explicit coefficients such as 0.05*GLA, 0.6*F, and 0.25*Qz1.
+                </small>
+            </div>
+        </div>
+
+        <!-- Components -->
+        <div class="form-section">
+            <h3>Components</h3>
+            <p class="section-help">Define the components (e.g., GLA, F, Qz1) that make up your grading.</p>
+
+            <div id="components-container">
+                {% if template %}
+                    {% for component in template.components %}
+                    <div class="component-row">
+                        <div class="form-group">
+                            <label>Component Code</label>
+                            <input type="text" name="component_code_{{ loop.index0 }}" value="{{ component.component_code }}" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Display Name</label>
+                            <input type="text" name="component_name_{{ loop.index0 }}" value="{{ component.component_name }}" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Max Marks</label>
+                            <input type="number" name="max_marks_{{ loop.index0 }}" value="{{ component.max_marks }}" step="0.01" required>
+                        </div>
+                        <button type="button" class="btn btn-remove" onclick="removeComponent(this)">Remove</button>
+                    </div>
+                    {% endfor %}
+                {% else %}
+                <div class="component-row">
+                    <div class="form-group">
+                        <label>Component Code</label>
+                        <input type="text" name="component_code_0" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Display Name</label>
+                        <input type="text" name="component_name_0" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Max Marks</label>
+                        <input type="number" name="max_marks_0" step="0.01" required>
+                    </div>
+                    <button type="button" class="btn btn-remove" onclick="removeComponent(this)">Remove</button>
+                </div>
+                {% endif %}
+            </div>
+
+            <button type="button" class="btn btn-secondary" onclick="addComponent()">Add Component</button>
+        </div>
+
+        <!-- Formula -->
+        <div class="form-section">
+            <h3>Grade Formula</h3>
+            <p class="section-help">
+                Enter the formula for grade calculation. Supported:
+                <strong>+, -, *, /, (), max(), min()</strong>
+                and component codes as variables.
+            </p>
+
+            <!-- Component Code Chips -->
+            <div class="formula-helpers">
+                <div class="helper-group">
+                    <strong>Component Codes:</strong>
+                    <div id="component-chips" class="chip-container">
+                        {% if template %}
+                            {% for component in template.components %}
+                            <button type="button" class="chip" onclick="insertChip('{{ component.component_code }}')">
+                                {{ component.component_code }}
+                            </button>
+                            {% endfor %}
+                        {% endif %}
+                    </div>
+                </div>
+
+                <div class="helper-group">
+                    <strong>Numbers:</strong>
+                    <div class="chip-container">
+                        <button type="button" class="chip" onclick="insertChip('0')">0</button>
+                        <button type="button" class="chip" onclick="insertChip('1')">1</button>
+                        <button type="button" class="chip" onclick="insertChip('2')">2</button>
+                        <button type="button" class="chip" onclick="insertChip('3')">3</button>
+                        <button type="button" class="chip" onclick="insertChip('4')">4</button>
+                        <button type="button" class="chip" onclick="insertChip('5')">5</button>
+                        <button type="button" class="chip" onclick="insertChip('6')">6</button>
+                        <button type="button" class="chip" onclick="insertChip('7')">7</button>
+                        <button type="button" class="chip" onclick="insertChip('8')">8</button>
+                        <button type="button" class="chip" onclick="insertChip('9')">9</button>
+                        <button type="button" class="chip" onclick="insertChip('.')">.</button>
+                    </div>
+                </div>
+
+                <div class="helper-group">
+                    <strong>Operators & Functions:</strong>
+                    <div class="chip-container">
+                        <button type="button" class="chip" onclick="insertChip('max(')">max(</button>
+                        <button type="button" class="chip" onclick="insertChip('min(')">min(</button>
+                        <button type="button" class="chip" onclick="insertChip('(')">​(</button>
+                        <button type="button" class="chip" onclick="insertChip(')')">)</button>
+                        <button type="button" class="chip" onclick="insertChip('+')">+</button>
+                        <button type="button" class="chip" onclick="insertChip('-')">-</button>
+                        <button type="button" class="chip" onclick="insertChip('*')">*</button>
+                        <button type="button" class="chip" onclick="insertChip('/')">​/</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label for="formula_text">Formula</label>
+                <textarea id="formula_text" name="formula_text" rows="4" required>{{ template.formula_text if template else '' }}</textarea>
+                <div class="formula-preview-wrapper">
+                    <label>Formula Preview</label>
+                    <div id="formula-preview" class="formula-rendered" aria-live="polite"></div>
+                </div>
+                <small class="formula-example">Example: 0.05*GLA + max(0.6*F + 0.25*max(Qz1, Qz2), 0.4*F + 0.25*Qz1 + 0.3*Qz2)</small>
+            </div>
+        </div>
+
+        <!-- Grade Boundaries -->
+        <div class="form-section">
+            <h3>Grade Boundaries</h3>
+            <p class="section-help">Enter each grade label and the minimum percentage needed to achieve it. The system will calculate the matching upper ranges automatically.</p>
+
+            <div id="boundaries-container">
+                {% if template %}
+                    {% for boundary in template.grade_boundaries %}
+                    <div class="boundary-row">
+                        <div class="form-group">
+                            <label>Grade Label</label>
+                            <input type="text" name="grade_label_{{ loop.index0 }}" value="{{ boundary.grade_label }}" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Minimum % Required</label>
+                            <input type="number" name="min_score_{{ loop.index0 }}" value="{{ boundary.min_score }}" step="0.01" min="0" max="100" required>
+                        </div>
+                        <button type="button" class="btn btn-remove" onclick="removeBoundary(this)">Remove</button>
+                    </div>
+                    {% endfor %}
+                {% else %}
+                <div class="boundary-row">
+                    <div class="form-group">
+                        <label>Grade Label</label>
+                        <input type="text" name="grade_label_0" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Minimum % Required</label>
+                        <input type="number" name="min_score_0" step="0.01" min="0" max="100" required>
+                    </div>
+                    <button type="button" class="btn btn-remove" onclick="removeBoundary(this)">Remove</button>
+                </div>
+                {% endif %}
+            </div>
+
+            <button type="button" class="btn btn-secondary" onclick="addBoundary()">Add Grade Boundary</button>
+        </div>
+
+        <!-- Form Actions -->
+        <div class="form-actions">
+            <button type="submit" class="btn btn-primary">{% if template %}Update{% else %}Create{% endif %} Template</button>
+            <a href="{{ url_for('grades.list_templates') }}" class="btn btn-secondary">Cancel</a>
+        </div>
+    </form>
+</div>
+
+<style>
+.page-header {
+    margin-bottom: 2rem;
+}
+
+.page-header h1 {
+    margin: 0;
+}
+
+.template-form {
+    max-width: 900px;
+    margin: 0 auto;
+}
+
+.form-section {
+    margin-bottom: 2.5rem;
+    padding: 1.5rem;
+    background-color: #f9f9f9;
+    border-radius: 8px;
+    border-left: 4px solid #3498db;
+}
+
+.form-section h3 {
+    margin: 0 0 0.5rem 0;
+    font-size: 1.2rem;
+    color: #2c3e50;
+}
+
+.section-help {
+    margin: 0.5rem 0 1rem 0;
+    color: #666;
+    font-size: 0.9rem;
+}
+
+.component-row, .boundary-row {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)) auto;
+    gap: 1rem;
+    margin-bottom: 1rem;
+    padding: 1rem;
+    background-color: white;
+    border-radius: 4px;
+    border: 1px solid #ddd;
+    align-items: flex-end;
+}
+
+.form-group {
+    display: flex;
+    flex-direction: column;
+}
+
+.form-group label {
+    margin-bottom: 0.5rem;
+    font-weight: 600;
+    font-size: 0.9rem;
+    color: #2c3e50;
+}
+
+.form-group input, .form-group select, .form-group textarea {
+    padding: 0.75rem;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    font-size: 1rem;
+    font-family: inherit;
+}
+
+.form-group input:focus, .form-group select:focus, .form-group textarea:focus {
+    outline: none;
+    border-color: #3498db;
+    box-shadow: 0 0 0 2px rgba(52, 152, 219, 0.1);
+}
+
+.radio-group {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+    margin-top: 0.5rem;
+}
+
+.radio-option {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.75rem 1rem;
+    background-color: white;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+}
+
+.radio-option input {
+    margin: 0;
+}
+
+.formula-helpers {
+    margin-bottom: 1.5rem;
+    padding: 1rem;
+    background-color: white;
+    border-radius: 4px;
+    border: 1px solid #ddd;
+}
+
+.helper-group {
+    margin-bottom: 1rem;
+}
+
+.helper-group:last-child {
+    margin-bottom: 0;
+}
+
+.helper-group strong {
+    display: block;
+    margin-bottom: 0.75rem;
+    color: #2c3e50;
+}
+
+.chip-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+}
+
+.chip {
+    background-color: #e8f4f8;
+    border: 1px solid #3498db;
+    color: #3498db;
+    padding: 0.5rem 1rem;
+    border-radius: 20px;
+    cursor: pointer;
+    font-size: 0.9rem;
+    font-weight: 600;
+    transition: all 0.2s ease;
+    font-family: monospace;
+}
+
+.chip:hover {
+    background-color: #3498db;
+    color: white;
+}
+
+#formula_text {
+    font-family: monospace;
+    font-size: 1rem;
+    font-variant-numeric: normal;
+    letter-spacing: normal;
+}
+
+.formula-preview-wrapper {
+    margin-top: 0.75rem;
+}
+
+.formula-preview-wrapper label {
+    display: block;
+    margin-bottom: 0.5rem;
+    font-weight: 600;
+    font-size: 0.9rem;
+    color: #2c3e50;
+}
+
+.formula-rendered {
+    min-height: 3rem;
+    padding: 0.75rem 1rem;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    background: white;
+    font-family: monospace;
+    font-size: 1rem;
+    font-variant-numeric: normal;
+    letter-spacing: normal;
+    line-height: 1.75;
+    overflow-x: auto;
+    white-space: pre-wrap;
+    word-break: break-word;
+}
+
+.formula-example {
+    display: block;
+    margin-top: 0.5rem;
+    color: #999;
+    font-style: italic;
+    word-break: break-word;
+}
+
+.form-actions {
+    display: flex;
+    gap: 1rem;
+    margin-top: 2rem;
+}
+
+.btn {
+    padding: 0.75rem 1.5rem;
+    border-radius: 4px;
+    border: none;
+    font-size: 1rem;
+    cursor: pointer;
+    text-decoration: none;
+    font-weight: 600;
+    transition: all 0.3s ease;
+    text-align: center;
+    display: inline-block;
+}
+
+.btn-primary {
+    background-color: #3498db;
+    color: white;
+    flex: 1;
+}
+
+.btn-primary:hover {
+    background-color: #2980b9;
+}
+
+.btn-secondary {
+    background-color: #95a5a6;
+    color: white;
+    flex: 1;
+}
+
+.btn-secondary:hover {
+    background-color: #7f8c8d;
+}
+
+.btn-remove {
+    background-color: #e74c3c;
+    color: white;
+    padding: 0.5rem 1rem;
+    font-size: 0.9rem;
+}
+
+.btn-remove:hover {
+    background-color: #c0392b;
+}
+
+@media (max-width: 600px) {
+    .component-row, .boundary-row {
+        grid-template-columns: 1fr;
+    }
+
+    .component-row button, .boundary-row button {
+        width: 100%;
+    }
+
+    .form-actions {
+        flex-direction: column;
+    }
+
+    .form-actions .btn {
+        flex: 1;
+    }
+}
+</style>
+
+<script>
+let componentIndex = {{ (template.components|length if template else 1) }};
+let boundaryIndex = {{ (template.grade_boundaries|length if template else 1) }};
+
+function addComponent() {
+    const container = document.getElementById('components-container');
+    const row = document.createElement('div');
+    row.className = 'component-row';
+    row.innerHTML = `
+        <div class="form-group">
+            <label>Component Code</label>
+            <input type="text" name="component_code_${componentIndex}" required>
+        </div>
+        <div class="form-group">
+            <label>Display Name</label>
+            <input type="text" name="component_name_${componentIndex}" required>
+        </div>
+        <div class="form-group">
+            <label>Max Marks</label>
+            <input type="number" name="max_marks_${componentIndex}" step="0.01" required>
+        </div>
+        <button type="button" class="btn btn-remove" onclick="removeComponent(this)">Remove</button>
+    `;
+    container.appendChild(row);
+    componentIndex++;
+    updateComponentChips();
+}
+
+function removeComponent(btn) {
+    btn.parentElement.remove();
+    updateComponentChips();
+}
+
+function addBoundary() {
+    const container = document.getElementById('boundaries-container');
+    const row = document.createElement('div');
+    row.className = 'boundary-row';
+    row.innerHTML = `
+        <div class="form-group">
+            <label>Grade Label</label>
+            <input type="text" name="grade_label_${boundaryIndex}" required>
+        </div>
+        <div class="form-group">
+            <label>Minimum % Required</label>
+            <input type="number" name="min_score_${boundaryIndex}" step="0.01" min="0" max="100" required>
+        </div>
+        <button type="button" class="btn btn-remove" onclick="removeBoundary(this)">Remove</button>
+    `;
+    container.appendChild(row);
+    boundaryIndex++;
+}
+
+function removeBoundary(btn) {
+    btn.parentElement.remove();
+}
+
+function updateComponentChips() {
+    // Get all component codes from the form
+    const codes = [];
+    document.querySelectorAll('input[name^="component_code_"]').forEach(input => {
+        const value = input.value.trim();
+        if (value) {
+            codes.push(value);
+        }
+    });
+
+    // Rebuild the component chips
+    const chipContainer = document.getElementById('component-chips');
+    chipContainer.innerHTML = '';
+    codes.forEach(code => {
+        const chip = document.createElement('button');
+        chip.type = 'button';
+        chip.className = 'chip';
+        chip.textContent = code;
+        chip.onclick = () => insertChip(code);
+        chipContainer.appendChild(chip);
+    });
+}
+
+function insertChip(text) {
+    const textarea = document.getElementById('formula_text');
+    const start = textarea.selectionStart;
+    const end = textarea.selectionEnd;
+    const before = textarea.value.substring(0, start);
+    const after = textarea.value.substring(end);
+    textarea.value = before + text + after;
+    textarea.selectionStart = textarea.selectionEnd = start + text.length;
+    textarea.focus();
+    renderFormulaPreview();
+}
+
+function renderFormulaPreview() {
+    const textarea = document.getElementById('formula_text');
+    const preview = document.getElementById('formula-preview');
+    if (!textarea || !preview) return;
+
+    const formula = String(textarea.value || '').replace(/,/g, '').trim();
+    preview.textContent = formula;
+}
+
+function normalizeNumberFields() {
+    document.querySelectorAll('input[type="number"]').forEach(input => {
+        input.setAttribute('inputmode', 'decimal');
+        input.setAttribute('step', 'any');
+        input.addEventListener('input', () => {
+            if (input.value.includes(',')) {
+                input.value = input.value.replace(/,/g, '.');
+            }
+        });
+    });
+}
+
+// Update chips when component codes change
+document.addEventListener('DOMContentLoaded', () => {
+    normalizeNumberFields();
+    updateComponentChips();
+    renderFormulaPreview();
+    document.getElementById('formula_text').addEventListener('input', renderFormulaPreview);
+});
+document.getElementById('components-container').addEventListener('change', updateComponentChips);
+</script>
+{% endblock %}

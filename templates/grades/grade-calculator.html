@@ -1,0 +1,553 @@
+{% extends "base.html" %}
+
+{% block title %}Grade Calculator - {{ subject.name }}{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="page-header">
+        <div>
+            <h1>Grade Calculator</h1>
+            <h2 class="subject-info">{{ subject.name }} ({{ subject.code }})</h2>
+        </div>
+        <a href="{{ url_for('subjects.detail', subject_id=subject.id) }}" class="btn btn-secondary">Back to Subject</a>
+    </div>
+
+    {% if not subject.formula_text or not subject.components %}
+    <!-- No Formula Setup -->
+    <div class="setup-needed">
+        <h3>Setup Required</h3>
+        <p>No grading formula is configured for this subject yet. Choose one of the options below:</p>
+
+        <div class="setup-options">
+            <!-- Apply Template -->
+            <div class="setup-card">
+                <h4>Apply Saved Template</h4>
+                <p>Use a pre-configured template you've created.</p>
+                {% if templates %}
+                <form method="POST" action="{{ url_for('grades.apply_template', subject_id=subject.id) }}">
+                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                    <div class="form-group">
+                        <label for="template_id">Select Template</label>
+                        <select id="template_id" name="template_id" required>
+                            <option value="">-- Choose a template --</option>
+                            {% for template in templates %}
+                            <option value="{{ template.id }}">{{ template.name }} ({{ template.university }})</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Apply Template</button>
+                </form>
+                {% else %}
+                <p style="color: #999; font-size: 0.9rem;">No templates available. Create one first.</p>
+                <a href="{{ url_for('grades.add_template') }}" class="btn btn-primary">Create Template</a>
+                {% endif %}
+            </div>
+
+            <!-- Custom Setup -->
+            <div class="setup-card">
+                <h4>Custom Formula</h4>
+                <p>Create a custom formula directly for this subject.</p>
+                <a href="{{ url_for('grades.custom_setup', subject_id=subject.id) }}" class="btn btn-primary">Create Custom Setup</a>
+            </div>
+        </div>
+    </div>
+
+    {% else %}
+    <!-- Formula is Set Up - Show Grade Calculator -->
+    <div class="grade-calculator">
+        <!-- Summary Card -->
+        <div class="summary-card">
+            <div class="summary-item">
+                <span class="summary-label">Final Score</span>
+                <span class="summary-value">
+                    {% if final_score is not none %}
+                        {{ "%.2f"|format(final_score) }}
+                    {% else %}
+                        <span class="score-pending">—</span>
+                    {% endif %}
+                </span>
+            </div>
+            <div class="summary-item">
+                <span class="summary-label">Grade</span>
+                <span class="summary-value">
+                    {% if grade %}
+                        <span class="grade-badge">{{ grade }}</span>
+                    {% else %}
+                        <span class="grade-pending">—</span>
+                    {% endif %}
+                </span>
+            </div>
+            <div class="summary-item">
+                <span class="summary-label">Status</span>
+                <span class="summary-value">
+                    {% if final_score is not none %}
+                        <span class="status-badge status-complete">Complete</span>
+                    {% else %}
+                        <span class="status-badge status-pending">Incomplete</span>
+                    {% endif %}
+                </span>
+            </div>
+        </div>
+
+        {% if score_message %}
+        <div class="info-box">
+            <p>{{ score_message }}</p>
+        </div>
+        {% endif %}
+
+        <!-- Components Table -->
+        <div class="section">
+            <h3>Components & Marks</h3>
+            <form method="POST" action="{{ url_for('grades.update_marks', subject_id=subject.id) }}">
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+
+                <div class="components-table-wrapper">
+                    <table class="components-table">
+                        <thead>
+                            <tr>
+                                <th>Component</th>
+                                <th>Code</th>
+                                <th>Max Marks</th>
+                                <th>Obtained Marks</th>
+                                <th>Percentage</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for component in subject.components %}
+                            <tr>
+                                <td>{{ component.component_name }}</td>
+                                <td><code>{{ component.component_code }}</code></td>
+                                <td>{{ component.max_marks }}</td>
+                                <td>
+                                    <input 
+                                        type="number" 
+                                        name="obtained_marks_{{ component.id }}" 
+                                        value="{% if component.obtained_marks is not none %}{{ component.obtained_marks }}{% endif %}"
+                                        step="0.01" 
+                                        min="0" 
+                                        max="{{ component.max_marks }}"
+                                        placeholder="Enter marks"
+                                        class="input-marks"
+                                    >
+                                </td>
+                                <td>
+                                    {% if component.obtained_marks is not none %}
+                                        <span class="percentage-value">{{ "%.1f"|format(component.get_percentage()) }}%</span>
+                                    {% else %}
+                                        <span class="percentage-empty">—</span>
+                                    {% endif %}
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="form-actions">
+                    <button type="submit" class="btn btn-primary">Save Marks</button>
+                    <a href="{{ url_for('grades.custom_setup', subject_id=subject.id) }}" class="btn btn-secondary">Edit Formula Setup</a>
+                </div>
+            </form>
+        </div>
+
+        <!-- Formula Display -->
+        <div class="section">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; gap: 1rem; flex-wrap: wrap;">
+                <h3 style="margin: 0;">Grading Formula</h3>
+                <div class="mode-badge {% if subject.calculation_mode == 'percentage' %}mode-percentage{% else %}mode-raw{% endif %}">
+                    {% if subject.calculation_mode == 'percentage' %}Percentage Mode{% else %}Raw Marks Mode{% endif %}
+                </div>
+                <a href="{{ url_for('grades.custom_setup', subject_id=subject.id) }}" class="btn btn-secondary" style="padding: 0.5rem 1rem; font-size: 0.9rem;">
+                    Enter Formula
+                </a>
+            </div>
+            <div class="formula-box">
+                <div id="grade-formula-preview" class="formula-rendered" data-formula="{{ subject.formula_text|e }}"></div>
+            </div>
+            <p class="formula-help">
+                {% if subject.calculation_mode == 'percentage' %}
+                    This formula is evaluated in Percentage mode, so each component is normalized to a 0-100 value before calculation.
+                {% else %}
+                    This formula is evaluated in Raw Marks mode, so each component uses its actual obtained marks directly.
+                {% endif %}
+            </p>
+        </div>
+
+        <!-- Grade Boundaries -->
+        <div class="section">
+            <h3>Grade Boundaries</h3>
+            <div class="boundaries-grid">
+                {% for boundary in subject.grade_boundaries %}
+                <div class="boundary-box">
+                    <div class="boundary-grade">{{ boundary.grade_label }}</div>
+                    <div class="boundary-range">{{ boundary.min_score }} — {{ boundary.max_score }}</div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+
+        <!-- Target Grade -->
+        <div class="section">
+            <p style="text-align: center;">
+                <a href="{{ url_for('grades.target_grade', subject_id=subject.id) }}" class="btn btn-secondary">
+                    Calculate Required Marks for Target Grade
+                </a>
+            </p>
+        </div>
+    </div>
+    {% endif %}
+</div>
+
+<style>
+.page-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 2rem;
+    gap: 1rem;
+}
+
+.page-header h1 {
+    margin: 0 0 0.5rem 0;
+}
+
+.subject-info {
+    font-size: 1.1rem;
+    color: #666;
+    font-weight: normal;
+    margin: 0;
+}
+
+.setup-needed {
+    background-color: #e8f4f8;
+    border: 1px solid #3498db;
+    border-radius: 8px;
+    padding: 2rem;
+    text-align: center;
+}
+
+.setup-needed h3 {
+    margin: 0 0 1rem 0;
+    color: #3498db;
+}
+
+.setup-options {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 2rem;
+    margin-top: 2rem;
+}
+
+.setup-card {
+    background-color: white;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    padding: 1.5rem;
+    text-align: left;
+}
+
+.setup-card h4 {
+    margin: 0 0 0.5rem 0;
+}
+
+.setup-card p {
+    color: #666;
+    margin: 0.5rem 0 1.5rem 0;
+}
+
+.setup-card select {
+    width: 100%;
+    padding: 0.75rem;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    margin-bottom: 1rem;
+    font-family: inherit;
+    font-size: 1rem;
+}
+
+.summary-card {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: 1rem;
+    margin-bottom: 2rem;
+}
+
+.summary-item {
+    background-color: white;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    padding: 1.5rem;
+    text-align: center;
+}
+
+.summary-label {
+    display: block;
+    font-size: 0.9rem;
+    color: #666;
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+}
+
+.summary-value {
+    display: block;
+    font-size: 2rem;
+    font-weight: bold;
+    color: #2c3e50;
+}
+
+.score-pending, .grade-pending {
+    color: #999;
+    font-size: 1.5rem;
+}
+
+.grade-badge {
+    background-color: #2c3e50;
+    color: white;
+    padding: 0.5rem 1rem;
+    border-radius: 4px;
+    font-size: 1.2rem;
+    font-weight: 600;
+    display: inline-block;
+}
+
+.status-badge {
+    padding: 0.5rem 1rem;
+    border-radius: 4px;
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: white;
+}
+
+.status-complete {
+    background-color: #27ae60;
+}
+
+.status-pending {
+    background-color: #f39c12;
+}
+
+.info-box {
+    background-color: #fff3cd;
+    border: 1px solid #ffc107;
+    border-radius: 4px;
+    padding: 1rem;
+    margin-bottom: 1.5rem;
+    color: #856404;
+}
+
+.section {
+    margin-bottom: 2rem;
+    padding: 1.5rem;
+    background-color: #f9f9f9;
+    border-radius: 8px;
+    border-left: 4px solid #3498db;
+}
+
+.section h3 {
+    margin: 0 0 1rem 0;
+}
+
+.components-table-wrapper {
+    overflow-x: auto;
+    margin-bottom: 1.5rem;
+}
+
+.components-table {
+    width: 100%;
+    border-collapse: collapse;
+    background-color: white;
+}
+
+.components-table th {
+    background-color: #f0f0f0;
+    padding: 1rem;
+    text-align: left;
+    font-weight: 600;
+    border-bottom: 2px solid #ddd;
+}
+
+.components-table td {
+    padding: 1rem;
+    border-bottom: 1px solid #eee;
+}
+
+.components-table code {
+    background-color: #f5f5f5;
+    padding: 0.25rem 0.5rem;
+    border-radius: 3px;
+    font-size: 0.9rem;
+}
+
+.input-marks {
+    width: 100%;
+    max-width: 150px;
+    padding: 0.5rem;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    font-size: 1rem;
+}
+
+.input-marks:focus {
+    outline: none;
+    border-color: #3498db;
+    box-shadow: 0 0 0 2px rgba(52, 152, 219, 0.1);
+}
+
+.percentage-value {
+    color: #27ae60;
+    font-weight: 600;
+}
+
+.percentage-empty {
+    color: #999;
+}
+
+.form-actions {
+    display: flex;
+    gap: 1rem;
+    margin-top: 1rem;
+}
+
+.form-actions .btn {
+    flex: 1;
+}
+
+.formula-box {
+    background-color: white;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    padding: 1rem;
+    margin-bottom: 1rem;
+    overflow-x: auto;
+}
+
+.mode-badge {
+    display: inline-flex;
+    align-items: center;
+    padding: 0.4rem 0.75rem;
+    border-radius: 999px;
+    font-size: 0.8rem;
+    font-weight: 700;
+    letter-spacing: 0.02em;
+}
+
+.mode-raw {
+    background-color: #e8f4ff;
+    color: #0d5ea6;
+}
+
+.mode-percentage {
+    background-color: #eafaf1;
+    color: #138a36;
+}
+
+.formula-rendered {
+    font-family: monospace;
+    font-size: 0.95rem;
+    line-height: 1.7;
+    font-variant-numeric: normal;
+    letter-spacing: normal;
+    white-space: pre-wrap;
+    word-break: break-word;
+}
+
+.formula-help {
+    color: #666;
+    font-size: 0.9rem;
+    margin-top: 0.5rem;
+}
+
+.boundaries-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+    gap: 1rem;
+}
+
+.boundary-box {
+    background-color: white;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    padding: 1rem;
+    text-align: center;
+}
+
+.boundary-grade {
+    font-size: 1.5rem;
+    font-weight: bold;
+    color: #2c3e50;
+    margin-bottom: 0.5rem;
+}
+
+.boundary-range {
+    font-size: 0.9rem;
+    color: #666;
+}
+
+.btn {
+    display: inline-block;
+    padding: 0.75rem 1.5rem;
+    border-radius: 4px;
+    border: none;
+    font-size: 1rem;
+    cursor: pointer;
+    text-decoration: none;
+    font-weight: 600;
+    transition: all 0.3s ease;
+    text-align: center;
+}
+
+.btn-primary {
+    background-color: #3498db;
+    color: white;
+}
+
+.btn-primary:hover {
+    background-color: #2980b9;
+}
+
+.btn-secondary {
+    background-color: #95a5a6;
+    color: white;
+}
+
+.btn-secondary:hover {
+    background-color: #7f8c8d;
+}
+
+@media (max-width: 600px) {
+    .page-header {
+        flex-direction: column;
+    }
+
+    .page-header .btn {
+        width: 100%;
+    }
+
+    .components-table {
+        font-size: 0.85rem;
+    }
+
+    .components-table th, .components-table td {
+        padding: 0.75rem 0.5rem;
+    }
+
+    .form-actions {
+        flex-direction: column;
+    }
+
+    .form-actions .btn {
+        width: 100%;
+    }
+}
+</style>
+
+<script>
+function renderGradeFormula() {
+    const preview = document.getElementById('grade-formula-preview');
+    if (!preview) return;
+    preview.textContent = String(preview.dataset.formula || '').replace(/,/g, '').trim();
+}
+
+document.addEventListener('DOMContentLoaded', renderGradeFormula);
+</script>
+{% endblock %}

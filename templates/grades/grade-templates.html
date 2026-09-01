@@ -1,0 +1,281 @@
+{% extends "base.html" %}
+
+{% block title %}Grade Templates{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="page-header">
+        <h1>Grade Templates</h1>
+        <a href="{{ url_for('grades.add_template') }}" class="btn btn-primary">Create Template</a>
+    </div>
+
+    {% if templates %}
+    <div class="templates-grid">
+        {% for template in templates %}
+        <div class="template-card">
+            <div class="card-header">
+                <h3>{{ template.name }}</h3>
+                <span class="university-badge" style="background-color: {% if template.university == 'VIT' %}#e74c3c{% else %}#3498db{% endif %};">
+                    {{ template.university }}
+                </span>
+            </div>
+
+            <div class="card-body">
+                <div class="template-section">
+                    <h4>Components</h4>
+                    <ul class="component-list">
+                        {% for component in template.components %}
+                        <li>
+                            <strong>{{ component.component_code }}</strong> — {{ component.component_name }}
+                            <span class="component-max">{{ component.max_marks }} pts</span>
+                        </li>
+                        {% endfor %}
+                    </ul>
+                </div>
+
+                <div class="template-section">
+                    <h4>Formula</h4>
+                    <code class="formula-display">{{ template.formula_text }}</code>
+                </div>
+
+                <div class="template-section">
+                    <h4>Grade Boundaries</h4>
+                    <div class="boundaries-list">
+                        {% for boundary in template.grade_boundaries %}
+                        <div class="boundary-item">
+                            <span class="grade-label">{{ boundary.grade_label }}</span>
+                            <span class="boundary-range">{{ boundary.min_score }} — {{ boundary.max_score }}</span>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+
+            <div class="card-actions">
+                <a href="{{ url_for('grades.edit_template', template_id=template.id) }}" class="btn btn-secondary">Edit</a>
+                <form method="POST" action="{{ url_for('grades.delete_template', template_id=template.id) }}" style="display: inline;">
+                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                    <button type="submit" class="btn btn-danger" onclick="return confirm('Delete this template?');">Delete</button>
+                </form>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    {% else %}
+    <div class="empty-state">
+        <p>No templates created yet.</p>
+        <a href="{{ url_for('grades.add_template') }}" class="btn btn-primary">Create Your First Template</a>
+    </div>
+    {% endif %}
+</div>
+
+<style>
+.page-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 2rem;
+}
+
+.page-header h1 {
+    margin: 0;
+}
+
+.templates-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(400px, 1fr));
+    gap: 1.5rem;
+    margin-bottom: 2rem;
+}
+
+.template-card {
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    overflow: hidden;
+    background-color: #fff;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    display: flex;
+    flex-direction: column;
+}
+
+.card-header {
+    background-color: #f5f5f5;
+    padding: 1rem;
+    border-bottom: 1px solid #ddd;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.card-header h3 {
+    margin: 0;
+    font-size: 1.2rem;
+}
+
+.university-badge {
+    color: white;
+    padding: 0.25rem 0.75rem;
+    border-radius: 4px;
+    font-size: 0.9rem;
+    font-weight: 600;
+}
+
+.card-body {
+    padding: 1rem;
+    flex-grow: 1;
+}
+
+.template-section {
+    margin-bottom: 1.5rem;
+}
+
+.template-section:last-child {
+    margin-bottom: 0;
+}
+
+.template-section h4 {
+    margin: 0 0 0.5rem 0;
+    font-size: 0.95rem;
+    color: #2c3e50;
+    font-weight: 600;
+}
+
+.component-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.component-list li {
+    padding: 0.5rem 0;
+    font-size: 0.9rem;
+    color: #555;
+    display: flex;
+    justify-content: space-between;
+}
+
+.component-max {
+    color: #999;
+    font-size: 0.85rem;
+}
+
+.formula-display {
+    display: block;
+    background-color: #f9f9f9;
+    border: 1px solid #eee;
+    padding: 0.75rem;
+    border-radius: 4px;
+    font-size: 0.9rem;
+    overflow-x: auto;
+    word-break: break-all;
+}
+
+.boundaries-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.boundary-item {
+    display: flex;
+    align-items: center;
+    font-size: 0.9rem;
+}
+
+.grade-label {
+    background-color: #2c3e50;
+    color: white;
+    width: 2rem;
+    height: 2rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 4px;
+    margin-right: 0.75rem;
+    font-weight: 600;
+}
+
+.boundary-range {
+    color: #555;
+}
+
+.card-actions {
+    padding: 1rem;
+    border-top: 1px solid #ddd;
+    display: flex;
+    gap: 0.5rem;
+}
+
+.card-actions form {
+    flex: 1;
+}
+
+.card-actions .btn {
+    flex: 1;
+}
+
+.empty-state {
+    text-align: center;
+    padding: 3rem 1rem;
+    background-color: #f9f9f9;
+    border-radius: 8px;
+}
+
+.empty-state p {
+    margin-bottom: 1rem;
+    color: #666;
+}
+
+.btn {
+    display: inline-block;
+    padding: 0.75rem 1.5rem;
+    border-radius: 4px;
+    border: none;
+    font-size: 1rem;
+    cursor: pointer;
+    text-decoration: none;
+    font-weight: 600;
+    transition: all 0.3s ease;
+    text-align: center;
+}
+
+.btn-primary {
+    background-color: #3498db;
+    color: white;
+}
+
+.btn-primary:hover {
+    background-color: #2980b9;
+}
+
+.btn-secondary {
+    background-color: #95a5a6;
+    color: white;
+}
+
+.btn-secondary:hover {
+    background-color: #7f8c8d;
+}
+
+.btn-danger {
+    background-color: #e74c3c;
+    color: white;
+}
+
+.btn-danger:hover {
+    background-color: #c0392b;
+}
+
+@media (max-width: 600px) {
+    .templates-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .page-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 1rem;
+    }
+}
+</style>
+{% endblock %}

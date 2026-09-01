@@ -1,0 +1,390 @@
+{% extends "base.html" %}
+
+{% block title %}Target Grade Calculator - {{ subject.name }}{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="page-header">
+        <div>
+            <h1>Target Grade Calculator</h1>
+            <h2 class="subject-info">{{ subject.name }} ({{ subject.code }})</h2>
+        </div>
+        <a href="{{ url_for('grades.grade_calculator', subject_id=subject.id) }}" class="btn btn-secondary">Back to Calculator</a>
+    </div>
+
+    <div class="calculator-container">
+        <div class="calculator-card">
+            <h3>What marks do I need?</h3>
+            <p>Select a target grade to find out the required performance in missing components.</p>
+
+            <form method="POST" class="target-form">
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+
+                <div class="form-group">
+                    <label for="target_grade">Select Target Grade</label>
+                    <select id="target_grade" name="target_grade" required>
+                        <option value="">-- Choose a grade --</option>
+                        {% for boundary in subject.grade_boundaries %}
+                        <option value="{{ boundary.grade_label }}" {% if target_grade_label == boundary.grade_label %}selected{% endif %}>
+                            {{ boundary.grade_label }} ({{ boundary.min_score }} — {{ boundary.max_score }})
+                        </option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <button type="submit" class="btn btn-primary">Calculate Required Marks</button>
+            </form>
+        </div>
+
+        {% if achievable is not none %}
+        <div class="result-card {% if achievable %}achievable{% else %}not-achievable{% endif %}">
+            <h3>
+                {% if achievable %}
+                    ✓ Grade {{ target_grade_label }} is Achievable
+                {% else %}
+                    ✗ Grade {{ target_grade_label }} Cannot Be Achieved
+                {% endif %}
+            </h3>
+
+            {% if achievable and required_pct is not none %}
+            <div class="result-box">
+                <p class="result-label">Required Uniform Score in Missing Components:</p>
+                <p class="result-value">{{ "%.2f"|format(required_pct) }}%</p>
+                <p class="result-help">
+                    This assumes you'll score the same percentage in all missing components.
+                    Actual requirements may vary if you score differently in each component.
+                </p>
+
+                <!-- Missing Components Info -->
+                <div class="missing-components">
+                    <h4>Components Needing Marks:</h4>
+                    <ul>
+                        {% for component in subject.components %}
+                            {% if component.obtained_marks is none %}
+                            <li>
+                                <strong>{{ component.component_code }}</strong> — {{ component.component_name }}
+                                <span class="component-max">(max: {{ component.max_marks }})</span>
+                                <br>
+                                <small>Needed: {{ "%.2f"|format(component.max_marks * required_pct / 100.0) }} / {{ component.max_marks }} marks</small>
+                            </li>
+                            {% endif %}
+                        {% endfor %}
+                    </ul>
+                </div>
+
+                <!-- Current Marks Info -->
+                <div class="current-marks">
+                    <h4>Your Current Marks:</h4>
+                    <ul>
+                        {% for component in subject.components %}
+                            {% if component.obtained_marks is not none %}
+                            <li>
+                                <strong>{{ component.component_code }}</strong> — {{ component.obtained_marks }} / {{ component.max_marks }}
+                                <span class="percentage">{{ "%.1f"|format(component.get_percentage()) }}%</span>
+                            </li>
+                            {% endif %}
+                        {% endfor %}
+                    </ul>
+                </div>
+            </div>
+            {% elif achievable %}
+            <div class="result-box">
+                <p class="result-label">You're all set!</p>
+                <p class="result-help">
+                    All marks are already entered. Check the main grade calculator page for your current grade.
+                </p>
+            </div>
+            {% else %}
+            <div class="result-box">
+                <p class="result-help">
+                    Even with 100% in all missing components, the target grade {{ target_grade_label }} cannot be achieved.
+                    Consider:
+                    <ul style="margin-top: 0.5rem;">
+                        <li>Checking if you can retake assessments</li>
+                        <li>Setting a more achievable target grade</li>
+                        <li>Focusing on improving component scores</li>
+                    </ul>
+                </p>
+            </div>
+            {% endif %}
+        </div>
+        {% endif %}
+
+        <!-- Reference Section -->
+        <div class="reference-card">
+            <h3>Grade Boundaries Reference</h3>
+            <div class="boundaries-table">
+                {% for boundary in subject.grade_boundaries %}
+                <div class="boundary-row">
+                    <span class="grade-label">{{ boundary.grade_label }}</span>
+                    <span class="boundary-range">{{ boundary.min_score }} — {{ boundary.max_score }}</span>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+.page-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 2rem;
+    gap: 1rem;
+}
+
+.page-header h1 {
+    margin: 0 0 0.5rem 0;
+}
+
+.subject-info {
+    font-size: 1.1rem;
+    color: #666;
+    font-weight: normal;
+    margin: 0;
+}
+
+.calculator-container {
+    max-width: 800px;
+    margin: 0 auto;
+}
+
+.calculator-card, .result-card, .reference-card {
+    background-color: white;
+    border-radius: 8px;
+    padding: 1.5rem;
+    margin-bottom: 1.5rem;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.calculator-card h3, .result-card h3, .reference-card h3 {
+    margin: 0 0 1rem 0;
+    color: #2c3e50;
+}
+
+.target-form {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.form-group {
+    display: flex;
+    flex-direction: column;
+}
+
+.form-group label {
+    margin-bottom: 0.5rem;
+    font-weight: 600;
+    font-size: 0.9rem;
+    color: #2c3e50;
+}
+
+.form-group select {
+    padding: 0.75rem;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    font-size: 1rem;
+    font-family: inherit;
+}
+
+.form-group select:focus {
+    outline: none;
+    border-color: #3498db;
+    box-shadow: 0 0 0 2px rgba(52, 152, 219, 0.1);
+}
+
+.result-card {
+    border-left: 4px solid #ddd;
+}
+
+.result-card.achievable {
+    border-left-color: #27ae60;
+    background-color: #ecfdf5;
+}
+
+.result-card.not-achievable {
+    border-left-color: #e74c3c;
+    background-color: #fff5f5;
+}
+
+.result-card h3 {
+    color: #2c3e50;
+    margin-bottom: 1rem;
+}
+
+.result-card.achievable h3 {
+    color: #27ae60;
+}
+
+.result-card.not-achievable h3 {
+    color: #e74c3c;
+}
+
+.result-box {
+    background-color: white;
+    border-radius: 4px;
+    padding: 1rem;
+    border: 1px solid #ddd;
+}
+
+.result-label {
+    font-weight: 600;
+    color: #2c3e50;
+    margin: 0 0 0.75rem 0;
+}
+
+.result-value {
+    font-size: 2.5rem;
+    font-weight: bold;
+    color: #27ae60;
+    margin: 0 0 1rem 0;
+}
+
+.result-help {
+    color: #666;
+    font-size: 0.9rem;
+    margin: 1rem 0 0 0;
+}
+
+.missing-components, .current-marks {
+    margin-top: 1.5rem;
+    padding-top: 1.5rem;
+    border-top: 1px solid #ddd;
+}
+
+.missing-components h4, .current-marks h4 {
+    margin: 0 0 0.75rem 0;
+    font-size: 1rem;
+    color: #2c3e50;
+}
+
+.missing-components ul, .current-marks ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.missing-components li, .current-marks li {
+    padding: 0.75rem 0;
+    border-bottom: 1px solid #eee;
+    color: #555;
+    font-size: 0.95rem;
+}
+
+.missing-components li:last-child, .current-marks li:last-child {
+    border-bottom: none;
+}
+
+.component-max {
+    color: #999;
+    font-size: 0.85rem;
+}
+
+.percentage {
+    background-color: #e8f4f8;
+    color: #3498db;
+    padding: 0.2rem 0.5rem;
+    border-radius: 3px;
+    font-weight: 600;
+    font-size: 0.85rem;
+    margin-left: 0.5rem;
+}
+
+.reference-card {
+    background-color: #f9f9f9;
+    border-left: 4px solid #3498db;
+}
+
+.boundaries-table {
+    display: grid;
+    gap: 0.75rem;
+}
+
+.boundary-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.75rem 1rem;
+    background-color: white;
+    border-radius: 4px;
+    border: 1px solid #ddd;
+}
+
+.grade-label {
+    background-color: #2c3e50;
+    color: white;
+    width: 3rem;
+    height: 3rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 4px;
+    font-weight: bold;
+    font-size: 1.1rem;
+}
+
+.boundary-range {
+    color: #666;
+    font-weight: 600;
+}
+
+.btn {
+    display: inline-block;
+    padding: 0.75rem 1.5rem;
+    border-radius: 4px;
+    border: none;
+    font-size: 1rem;
+    cursor: pointer;
+    text-decoration: none;
+    font-weight: 600;
+    transition: all 0.3s ease;
+    text-align: center;
+}
+
+.btn-primary {
+    background-color: #3498db;
+    color: white;
+}
+
+.btn-primary:hover {
+    background-color: #2980b9;
+}
+
+.btn-secondary {
+    background-color: #95a5a6;
+    color: white;
+}
+
+.btn-secondary:hover {
+    background-color: #7f8c8d;
+}
+
+@media (max-width: 600px) {
+    .page-header {
+        flex-direction: column;
+    }
+
+    .page-header .btn {
+        width: 100%;
+    }
+
+    .result-value {
+        font-size: 2rem;
+    }
+
+    .boundary-row {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 0.5rem;
+    }
+
+    .grade-label {
+        width: 2.5rem;
+        height: 2.5rem;
+        font-size: 0.95rem;
+    }
+}
+</style>
+{% endblock %}

@@ -17,11 +17,27 @@ class Subject(db.Model):
     term = db.Column(db.String(100), nullable=False)  # e.g., "January 2027"
     subject_type = db.Column(db.String(50), nullable=False)  # e.g., "Theory", "Lab"
     status = db.Column(db.String(20), nullable=False, default='Active')  # 'Active', 'Completed', 'Archived'
+    formula_text = db.Column(db.Text, nullable=True)  # Grade formula (e.g., "0.05*GLA + max(0.6*F, ...)")
+    calculation_mode = db.Column(db.String(20), nullable=False, default='raw')
     created_at = db.Column(db.DateTime, default=datetime.utcnow, nullable=False)
     updated_at = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow, nullable=False)
 
     # Relationship to User
     user = db.relationship('User', backref='subjects', lazy=True)
+    
+    # Relationships for grade components and boundaries
+    components = db.relationship(
+        'SubjectComponent',
+        backref='subject',
+        lazy=True,
+        cascade='all, delete-orphan'
+    )
+    grade_boundaries = db.relationship(
+        'SubjectGradeBoundary',
+        backref='subject',
+        lazy=True,
+        cascade='all, delete-orphan'
+    )
 
     def __repr__(self):
         return f'<Subject {self.code} - {self.name}>'

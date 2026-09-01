@@ -201,13 +201,20 @@
 <!-- Feature Sections (Placeholders) -->
 <div class="sections-container">
     <!-- Grade Calculator Section -->
-    <div class="section-card">
-        <h2>📊 Grade Calculator</h2>
-        <div class="coming-soon">
-            <p>Coming soon</p>
-            <p style="font-size: 0.9rem;">Track your assessments and calculate your grade.</p>
-        </div>
-    </div>
+<div class="section-card">
+    <h2>📊 Grade Calculator</h2>
+    {% if subject.formula_text %}
+        <p style="color: #7f8c8d; margin-bottom: 1rem;">Grade formula is set up for this subject.</p>
+        <a href="{{ url_for('grades.grade_calculator', subject_id=subject.id) }}" class="action-btn btn-edit">
+            Open Grade Calculator
+        </a>
+    {% else %}
+        <p style="color: #7f8c8d; margin-bottom: 1rem;">No grading formula set up yet.</p>
+        <a href="{{ url_for('grades.grade_calculator', subject_id=subject.id) }}" class="action-btn btn-edit">
+            Set Up Grade Calculator
+        </a>
+    {% endif %}
+</div>
 
     <!-- Study Material Section -->
     <div class="section-card">
