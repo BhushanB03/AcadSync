@@ -53,6 +53,13 @@ class Subject(db.Model):
         lazy=True,
         cascade='all, delete-orphan'
     )
+    weekly_progress = db.relationship(
+        'WeeklyProgress',
+        backref='subject',
+        lazy=True,
+        cascade='all, delete-orphan',
+        order_by='WeeklyProgress.week_number.asc()'
+    )
 
     def __repr__(self):
         return f'<Subject {self.code} - {self.name}>'

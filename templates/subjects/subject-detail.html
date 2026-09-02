@@ -296,10 +296,27 @@
     <!-- Attendance/Progress Section -->
     <div class="section-card">
         <h2>📈 Attendance & Progress</h2>
-        <div class="coming-soon">
-            <p>Coming soon</p>
-            <p style="font-size: 0.9rem;">Track attendance and monitor your progress.</p>
-        </div>
+        {% if subject.university == 'IITM' %}
+            {% set total_weeks = subject.weekly_progress|length %}
+            {% set completed_weeks = subject.weekly_progress|selectattr('status', 'equalto', 'Completed')|list|length %}
+            {% if total_weeks > 0 %}
+                <p style="color: #27ae60; font-weight: 600; margin-bottom: 0.5rem;">
+                    ✓ {{ completed_weeks }} of {{ total_weeks }} week{{ 's' if total_weeks != 1 else '' }} completed
+                </p>
+                <div style="background-color: #edf2f7; height: 8px; border-radius: 999px; overflow: hidden; margin-bottom: 1.25rem;">
+                    <div style="background-color: #27ae60; height: 100%; width: {{ (completed_weeks / total_weeks * 100)|round|int }}%;"></div>
+                </div>
+            {% else %}
+                <p style="color: #7f8c8d; margin-bottom: 1rem;">Track weekly syllabus coverage, lectures, and assignments.</p>
+            {% endif %}
+            <a href="{{ url_for('progress.weekly_progress', subject_id=subject.id) }}" class="action-btn btn-edit">
+                Open Weekly Progress
+            </a>
+        {% else %}
+            <div class="coming-soon">
+                <p>Attendance tracking not enabled for VIT subjects yet.</p>
+            </div>
+        {% endif %}
     </div>
 </div>
 {% endblock %}

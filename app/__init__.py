@@ -42,10 +42,12 @@ def create_app():
     from app.routes.grades import grades_bp
     from app.routes.materials import materials_bp
     from app.routes.tasks import tasks_bp
+    from app.routes.progress import progress_bp
     app.register_blueprint(auth_bp)
     app.register_blueprint(subjects_bp)
     app.register_blueprint(grades_bp)
     app.register_blueprint(materials_bp)
     app.register_blueprint(tasks_bp)
+    app.register_blueprint(progress_bp)
 
     return app

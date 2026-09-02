@@ -1,0 +1,554 @@
+{% extends "base.html" %}
+
+{% block title %}Weekly Progress — {{ subject.name }} — AcadSync{% endblock %}
+
+{% block extra_css %}
+<style>
+    .progress-container {
+        max-width: 800px;
+        margin: 0 auto;
+    }
+
+    .back-link {
+        display: inline-block;
+        margin-bottom: 1.5rem;
+        color: #3498db;
+        text-decoration: none;
+        font-weight: 500;
+        transition: color 0.2s;
+    }
+
+    .back-link:hover {
+        color: #2980b9;
+        text-decoration: underline;
+    }
+
+    /* Header Card */
+    .progress-header-card {
+        background: white;
+        border-radius: 12px;
+        padding: 2rem;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.06);
+        margin-bottom: 2rem;
+    }
+
+    .progress-header-top {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        gap: 1rem;
+        flex-wrap: wrap;
+        margin-bottom: 1.25rem;
+    }
+
+    .subject-title {
+        margin: 0 0 0.4rem 0;
+        font-size: 1.6rem;
+        color: #2c3e50;
+    }
+
+    .subject-code {
+        color: #7f8c8d;
+        font-size: 0.95rem;
+        font-weight: 600;
+    }
+
+    .badge-group {
+        display: flex;
+        gap: 0.5rem;
+        align-items: center;
+    }
+
+    .badge-iitm {
+        display: inline-block;
+        padding: 0.35rem 0.8rem;
+        border-radius: 20px;
+        font-size: 0.8rem;
+        font-weight: 700;
+        background-color: #3498db;
+        color: white;
+    }
+
+    .badge-term {
+        display: inline-block;
+        padding: 0.35rem 0.8rem;
+        border-radius: 20px;
+        font-size: 0.8rem;
+        font-weight: 600;
+        background-color: #f1f5f9;
+        color: #475569;
+    }
+
+    /* Progress Stats & Bar */
+    .progress-summary {
+        margin-top: 1.25rem;
+        padding-top: 1.25rem;
+        border-top: 1px solid #edf2f7;
+    }
+
+    .progress-stats {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 0.75rem;
+        font-size: 0.95rem;
+        font-weight: 600;
+        color: #2c3e50;
+        flex-wrap: wrap;
+        gap: 0.5rem;
+    }
+
+    .progress-breakdown {
+        display: flex;
+        gap: 1rem;
+        font-size: 0.85rem;
+        color: #7f8c8d;
+    }
+
+    .breakdown-item {
+        display: flex;
+        align-items: center;
+        gap: 0.35rem;
+    }
+
+    .breakdown-dot {
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+        display: inline-block;
+    }
+
+    .dot-completed { background-color: #27ae60; }
+    .dot-in-progress { background-color: #3498db; }
+    .dot-not-started { background-color: #bdc3c7; }
+
+    .progress-bar-bg {
+        width: 100%;
+        height: 10px;
+        background-color: #edf2f7;
+        border-radius: 999px;
+        overflow: hidden;
+    }
+
+    .progress-bar-fill {
+        height: 100%;
+        background: linear-gradient(90deg, #2ecc71, #27ae60);
+        border-radius: 999px;
+        transition: width 0.4s ease;
+    }
+
+    /* Timeline & Checklist Card */
+    .timeline-card {
+        background: white;
+        border-radius: 12px;
+        padding: 2rem;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.06);
+    }
+
+    .timeline-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 1.75rem;
+        padding-bottom: 0.75rem;
+        border-bottom: 2px solid #f1f5f9;
+        flex-wrap: wrap;
+        gap: 1rem;
+    }
+
+    .timeline-header h2 {
+        font-size: 1.3rem;
+        color: #2c3e50;
+        margin: 0;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    /* Timeline Items */
+    .timeline-list {
+        display: flex;
+        flex-direction: column;
+        gap: 1rem;
+        margin-bottom: 2rem;
+    }
+
+    .timeline-item {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 1.1rem 1.25rem;
+        border-radius: 10px;
+        background: #f8fafc;
+        border: 1px solid #e2e8f0;
+        transition: all 0.2s ease;
+        gap: 1rem;
+        flex-wrap: wrap;
+    }
+
+    .timeline-item:hover {
+        background: #ffffff;
+        box-shadow: 0 3px 8px rgba(0, 0, 0, 0.04);
+        border-color: #cbd5e1;
+    }
+
+    .timeline-item.status-completed {
+        border-left: 5px solid #27ae60;
+    }
+
+    .timeline-item.status-in-progress {
+        border-left: 5px solid #3498db;
+    }
+
+    .timeline-item.status-not-started {
+        border-left: 5px solid #bdc3c7;
+    }
+
+    .item-left {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        min-width: 140px;
+    }
+
+    .item-icon-bubble {
+        width: 38px;
+        height: 38px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.1rem;
+        font-weight: 700;
+        flex-shrink: 0;
+    }
+
+    .bubble-completed {
+        background-color: #e8f8f0;
+        color: #27ae60;
+        border: 2px solid #27ae60;
+    }
+
+    .bubble-in-progress {
+        background-color: #ebf5fb;
+        color: #2980b9;
+        border: 2px solid #3498db;
+    }
+
+    .bubble-not-started {
+        background-color: #f8f9fa;
+        color: #95a5a6;
+        border: 2px solid #bdc3c7;
+    }
+
+    .week-label-group {
+        display: flex;
+        flex-direction: column;
+    }
+
+    .week-title {
+        font-size: 1.1rem;
+        font-weight: 700;
+        color: #2c3e50;
+        margin: 0;
+    }
+
+    .week-subtitle {
+        font-size: 0.8rem;
+        color: #7f8c8d;
+    }
+
+    .item-right {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+        flex-wrap: wrap;
+    }
+
+    /* Inline Status Form */
+    .status-select-wrapper {
+        position: relative;
+        display: inline-block;
+    }
+
+    .status-select {
+        appearance: none;
+        -webkit-appearance: none;
+        padding: 0.55rem 2.2rem 0.55rem 1rem;
+        border-radius: 8px;
+        font-size: 0.85rem;
+        font-weight: 600;
+        cursor: pointer;
+        border: 1px solid #cbd5e1;
+        background-color: white;
+        color: #2c3e50;
+        transition: all 0.2s;
+        background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23475569' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
+        background-repeat: no-repeat;
+        background-position: right 0.75rem center;
+        background-size: 1rem;
+    }
+
+    .status-select:hover {
+        border-color: #94a3b8;
+    }
+
+    .status-select:focus {
+        outline: none;
+        border-color: #3498db;
+        box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.2);
+    }
+
+    .status-select.val-completed {
+        background-color: #e8f8f0;
+        color: #196f3d;
+        border-color: #a9dfbf;
+    }
+
+    .status-select.val-in-progress {
+        background-color: #ebf5fb;
+        color: #1b4f72;
+        border-color: #aed6f1;
+    }
+
+    .status-select.val-not-started {
+        background-color: #f8f9fa;
+        color: #5d6d7e;
+        border-color: #d5dbdb;
+    }
+
+    /* Delete Button */
+    .btn-delete-week {
+        background: transparent;
+        border: 1px solid #e2e8f0;
+        color: #e74c3c;
+        width: 34px;
+        height: 34px;
+        border-radius: 8px;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.1rem;
+        transition: all 0.2s;
+    }
+
+    .btn-delete-week:hover {
+        background-color: #fdf2f2;
+        border-color: #f5c6cb;
+    }
+
+    /* Add Week Action */
+    .timeline-footer {
+        display: flex;
+        justify-content: center;
+        padding-top: 1rem;
+        border-top: 1px dashed #e2e8f0;
+    }
+
+    .btn-add-week {
+        background: #27ae60;
+        color: white;
+        padding: 0.8rem 1.75rem;
+        border: none;
+        border-radius: 8px;
+        font-size: 1rem;
+        font-weight: 600;
+        cursor: pointer;
+        transition: background-color 0.2s, transform 0.1s;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        box-shadow: 0 2px 6px rgba(39, 174, 96, 0.2);
+    }
+
+    .btn-add-week:hover {
+        background: #219653;
+        transform: translateY(-1px);
+    }
+
+    .btn-add-week:active {
+        transform: translateY(0);
+    }
+
+    /* Empty State */
+    .empty-state {
+        text-align: center;
+        padding: 3rem 1.5rem;
+        color: #7f8c8d;
+    }
+
+    .empty-state-icon {
+        font-size: 3rem;
+        margin-bottom: 1rem;
+        opacity: 0.8;
+    }
+
+    .empty-state h3 {
+        color: #2c3e50;
+        margin-bottom: 0.5rem;
+    }
+
+    .empty-state p {
+        margin-bottom: 1.5rem;
+        max-width: 420px;
+        margin-left: auto;
+        margin-right: auto;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="progress-container">
+    <!-- Back to Subject Link -->
+    <a href="{{ url_for('subjects.detail', subject_id=subject.id) }}" class="back-link">
+        ← Back to {{ subject.code }} ({{ subject.name }})
+    </a>
+
+    <!-- Subject & Progress Header Card -->
+    <div class="progress-header-card">
+        <div class="progress-header-top">
+            <div>
+                <h1 class="subject-title">{{ subject.name }}</h1>
+                <div class="subject-code">{{ subject.code }}</div>
+            </div>
+            <div class="badge-group">
+                <span class="badge-iitm">IITM</span>
+                <span class="badge-term">{{ subject.term }}</span>
+            </div>
+        </div>
+
+        <!-- Progress Summary -->
+        <div class="progress-summary">
+            <div class="progress-stats">
+                <span>
+                    {% if total_weeks > 0 %}
+                        {{ completed_weeks }} of {{ total_weeks }} week{{ 's' if total_weeks != 1 else '' }} completed
+                    {% else %}
+                        No weeks tracked yet
+                    {% endif %}
+                </span>
+                <span>
+                    {% if total_weeks > 0 %}
+                        {{ (completed_weeks / total_weeks * 100)|round|int }}%
+                    {% else %}
+                        0%
+                    {% endif %}
+                </span>
+            </div>
+
+            <!-- Visual Progress Bar -->
+            <div class="progress-bar-bg">
+                <div class="progress-bar-fill" style="width: {% if total_weeks > 0 %}{{ (completed_weeks / total_weeks * 100)|round|int }}{% else %}0{% endif %}%;"></div>
+            </div>
+
+            {% if total_weeks > 0 %}
+            <div class="progress-breakdown" style="margin-top: 0.75rem;">
+                <div class="breakdown-item">
+                    <span class="breakdown-dot dot-completed"></span>
+                    <span>Completed: {{ completed_weeks }}</span>
+                </div>
+                <div class="breakdown-item">
+                    <span class="breakdown-dot dot-in-progress"></span>
+                    <span>In Progress: {{ in_progress_weeks }}</span>
+                </div>
+                <div class="breakdown-item">
+                    <span class="breakdown-dot dot-not-started"></span>
+                    <span>Not Started: {{ total_weeks - completed_weeks - in_progress_weeks }}</span>
+                </div>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- Timeline & Checklist Section -->
+    <div class="timeline-card">
+        <div class="timeline-header">
+            <h2>
+                <span>📅</span> Weekly Timeline
+            </h2>
+            <form method="POST" action="{{ url_for('progress.add_week', subject_id=subject.id) }}">
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                <button type="submit" class="btn-add-week" style="padding: 0.5rem 1rem; font-size: 0.9rem;">
+                    + Add Week {{ next_week_number }}
+                </button>
+            </form>
+        </div>
+
+        {% if weeks %}
+            <div class="timeline-list">
+                {% for week in weeks %}
+                    <div class="timeline-item status-{{ week.status.lower().replace(' ', '-') }}">
+                        <div class="item-left">
+                            <div class="item-icon-bubble 
+                                {% if week.status == 'Completed' %}bubble-completed
+                                {% elif week.status == 'In Progress' %}bubble-in-progress
+                                {% else %}bubble-not-started{% endif %}">
+                                {% if week.status == 'Completed' %}
+                                    ✓
+                                {% elif week.status == 'In Progress' %}
+                                    ⏳
+                                {% else %}
+                                    ○
+                                {% endif %}
+                            </div>
+                            <div class="week-label-group">
+                                <h3 class="week-title">Week {{ week.week_number }}</h3>
+                                <span class="week-subtitle">{{ week.status }}</span>
+                            </div>
+                        </div>
+
+                        <div class="item-right">
+                            <!-- Inline Status Update Form -->
+                            <form method="POST" action="{{ url_for('progress.update_status', week_id=week.id) }}" class="status-form">
+                                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                                <div class="status-select-wrapper">
+                                    <select name="status" onchange="this.form.submit()" 
+                                            class="status-select 
+                                            {% if week.status == 'Completed' %}val-completed
+                                            {% elif week.status == 'In Progress' %}val-in-progress
+                                            {% else %}val-not-started{% endif %}"
+                                            aria-label="Update status for Week {{ week.week_number }}">
+                                        <option value="Not Started" {% if week.status == 'Not Started' %}selected{% endif %}>Not Started</option>
+                                        <option value="In Progress" {% if week.status == 'In Progress' %}selected{% endif %}>In Progress</option>
+                                        <option value="Completed" {% if week.status == 'Completed' %}selected{% endif %}>Completed</option>
+                                    </select>
+                                </div>
+                            </form>
+
+                            <!-- Delete Week Form -->
+                            <form method="POST" action="{{ url_for('progress.delete_week', week_id=week.id) }}" onsubmit="return confirm('Are you sure you want to delete Week {{ week.week_number }}?');">
+                                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                                <button type="submit" class="btn-delete-week" title="Delete Week {{ week.week_number }}">&times;</button>
+                            </form>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+
+            <!-- Bottom Add Week Button -->
+            <div class="timeline-footer">
+                <form method="POST" action="{{ url_for('progress.add_week', subject_id=subject.id) }}">
+                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                    <button type="submit" class="btn-add-week">
+                        + Add Week {{ next_week_number }}
+                    </button>
+                </form>
+            </div>
+        {% else %}
+            <!-- Empty State -->
+            <div class="empty-state">
+                <div class="empty-state-icon">📋</div>
+                <h3>No weeks added yet</h3>
+                <p>Start tracking your lectures, assignments, and study milestones week by week for this semester.</p>
+                <form method="POST" action="{{ url_for('progress.add_week', subject_id=subject.id) }}">
+                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                    <button type="submit" class="btn-add-week">
+                        + Add Week 1
+                    </button>
+                </form>
+            </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}
