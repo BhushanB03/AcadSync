@@ -1,7 +1,10 @@
+from datetime import date
+
 from flask import Blueprint, render_template, request, redirect, url_for, flash, abort
 from flask_login import login_required, current_user
 from app.extensions import db
 from app.models.subject import Subject
+from app.models.task import Task
 
 subjects_bp = Blueprint('subjects', __name__, url_prefix='/subjects')
 
@@ -117,8 +120,22 @@ def detail(subject_id):
     # Verify ownership
     if not subject.belongs_to_user(current_user.id):
         abort(403)
+
+    upcoming_tasks = (
+        Task.query
+        .filter_by(user_id=current_user.id, subject_id=subject.id)
+        .filter(Task.status != 'Completed')
+        .order_by(Task.due_date.is_(None), Task.due_date.asc(), Task.created_at.asc())
+        .limit(3)
+        .all()
+    )
     
-    return render_template('subjects/subject-detail.html', subject=subject)
+    return render_template(
+        'subjects/subject-detail.html',
+        subject=subject,
+        upcoming_tasks=upcoming_tasks,
+        today=date.today()
+    )
 
 
 @subjects_bp.route('/<int:subject_id>/edit', methods=['GET', 'POST'])

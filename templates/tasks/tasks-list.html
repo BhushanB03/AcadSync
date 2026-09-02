@@ -1,0 +1,384 @@
+{% extends "base.html" %}
+
+{% block title %}My Tasks — AcadSync{% endblock %}
+
+{% block extra_css %}
+<style>
+    .page-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 1rem;
+        margin-bottom: 1.5rem;
+        flex-wrap: wrap;
+    }
+
+    .page-header h1 {
+        color: #2c3e50;
+    }
+
+    .btn {
+        display: inline-block;
+        padding: 0.75rem 1.2rem;
+        border-radius: 8px;
+        text-decoration: none;
+        font-weight: 600;
+        border: none;
+        cursor: pointer;
+    }
+
+    .btn-primary {
+        background: #2ecc71;
+        color: white;
+    }
+
+    .filter-bar {
+        background: white;
+        border-radius: 10px;
+        padding: 1rem;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+        margin-bottom: 1.5rem;
+    }
+
+    .filter-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+        gap: 1rem;
+        align-items: end;
+    }
+
+    .filter-group {
+        display: flex;
+        flex-direction: column;
+        gap: 0.4rem;
+    }
+
+    .filter-group label {
+        font-size: 0.9rem;
+        color: #7f8c8d;
+        font-weight: 600;
+    }
+
+    .filter-group select {
+        width: 100%;
+        padding: 0.65rem 0.7rem;
+        border: 1px solid #dfe6e9;
+        border-radius: 8px;
+        font-size: 0.95rem;
+    }
+
+    .filter-actions {
+        display: flex;
+        gap: 0.75rem;
+        margin-top: 1rem;
+        flex-wrap: wrap;
+    }
+
+    .btn-secondary {
+        background: #ecf0f1;
+        color: #2c3e50;
+    }
+
+    .task-list {
+        display: flex;
+        flex-direction: column;
+        gap: 1rem;
+    }
+
+    .task-card {
+        background: white;
+        border-radius: 10px;
+        padding: 1.2rem 1.25rem;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+        border-left: 5px solid #bdc3c7;
+    }
+
+    .task-card.overdue {
+        border-left-color: #e74c3c;
+        background: #fff5f5;
+    }
+
+    .task-card.due-soon {
+        border-left-color: #f39c12;
+    }
+
+    .task-header {
+        display: flex;
+        justify-content: space-between;
+        gap: 1rem;
+        align-items: flex-start;
+        margin-bottom: 0.8rem;
+        flex-wrap: wrap;
+    }
+
+    .task-title {
+        font-size: 1.2rem;
+        font-weight: 700;
+        color: #2c3e50;
+        margin: 0;
+    }
+
+    .task-meta {
+        display: flex;
+        gap: 0.6rem;
+        flex-wrap: wrap;
+        align-items: center;
+    }
+
+    .badge {
+        display: inline-block;
+        padding: 0.35rem 0.7rem;
+        border-radius: 20px;
+        font-size: 0.75rem;
+        font-weight: 700;
+        color: white;
+    }
+
+    .badge-priority-high {
+        background: #e74c3c;
+    }
+
+    .badge-priority-medium {
+        background: #f39c12;
+    }
+
+    .badge-priority-low {
+        background: #27ae60;
+    }
+
+    .badge-status-not-started {
+        background: #7f8c8d;
+    }
+
+    .badge-status-in-progress {
+        background: #3498db;
+    }
+
+    .badge-status-completed {
+        background: #2ecc71;
+    }
+
+    .subject-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.4rem;
+        background: #ecf0f1;
+        color: #2c3e50;
+        padding: 0.35rem 0.7rem;
+        border-radius: 999px;
+        font-size: 0.8rem;
+        font-weight: 600;
+    }
+
+    .subject-badge.institution {
+        display: inline-flex;
+        background: #bdc3c7;
+        padding: 0.2rem 0.5rem;
+    }
+
+    .subject-badge.institution.iitm {
+        background: #3498db;
+        color: white;
+    }
+
+    .task-content {
+        display: grid;
+        grid-template-columns: 1.5fr 1fr auto;
+        gap: 1rem;
+        align-items: center;
+    }
+
+    .task-description {
+        color: #52616c;
+        margin: 0.6rem 0 0;
+    }
+
+    .task-due {
+        font-weight: 600;
+        color: #2c3e50;
+    }
+
+    .task-due.overdue {
+        color: #c0392b;
+    }
+
+    .task-due.due-soon {
+        color: #d35400;
+    }
+
+    .task-actions {
+        display: flex;
+        gap: 0.5rem;
+        align-items: center;
+        flex-wrap: wrap;
+        justify-content: flex-end;
+    }
+
+    .small-btn {
+        display: inline-block;
+        padding: 0.5rem 0.9rem;
+        border-radius: 6px;
+        border: none;
+        font-weight: 600;
+        cursor: pointer;
+        text-decoration: none;
+        color: white;
+        background: #95a5a6;
+    }
+
+    .btn-edit {
+        background: #f39c12;
+    }
+
+    .btn-delete {
+        background: #e74c3c;
+    }
+
+    .toggle-status {
+        background: #2c3e50;
+    }
+
+    .empty-state {
+        background: white;
+        padding: 2rem;
+        border-radius: 10px;
+        text-align: center;
+        color: #7f8c8d;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <h1>My Tasks</h1>
+    <a href="{{ url_for('tasks.add') }}" class="btn btn-primary">+ Add Task</a>
+</div>
+
+<div class="filter-bar">
+    <form method="GET" action="{{ url_for('tasks.index') }}">
+        <div class="filter-grid">
+            <div class="filter-group">
+                <label for="status">Status</label>
+                <select id="status" name="status">
+                    {% for status in ['All', 'Not Started', 'In Progress', 'Completed'] %}
+                        <option value="{{ status }}" {% if selected_status == status %}selected{% endif %}>{{ status }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <div class="filter-group">
+                <label for="priority">Priority</label>
+                <select id="priority" name="priority">
+                    {% for priority in ['All', 'High', 'Medium', 'Low'] %}
+                        <option value="{{ priority }}" {% if selected_priority == priority %}selected{% endif %}>{{ priority }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <div class="filter-group">
+                <label for="university">University</label>
+                <select id="university" name="university">
+                    {% for uni in ['All', 'VIT', 'IITM'] %}
+                        <option value="{{ uni }}" {% if selected_university == uni %}selected{% endif %}>{{ uni }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <div class="filter-group">
+                <label for="subject_id">Subject</label>
+                <select id="subject_id" name="subject_id">
+                    <option value="All" {% if not selected_subject_id %}selected{% endif %}>All Subjects</option>
+                    {% for subject in subjects %}
+                        <option value="{{ subject.id }}" {% if selected_subject_id|string == subject.id|string %}selected{% endif %}>
+                            {{ subject.name }} ({{ subject.university }})
+                        </option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <div class="filter-group">
+                <label for="sort">Sort By</label>
+                <select id="sort" name="sort">
+                    <option value="due_date" {% if selected_sort == 'due_date' %}selected{% endif %}>Due Date</option>
+                    <option value="priority" {% if selected_sort == 'priority' %}selected{% endif %}>Priority</option>
+                </select>
+            </div>
+        </div>
+
+        <div class="filter-actions">
+            <button type="submit" class="btn btn-secondary">Apply Filters</button>
+            <a href="{{ url_for('tasks.index') }}" class="btn btn-secondary">Clear</a>
+        </div>
+    </form>
+</div>
+
+{% if tasks %}
+    <div class="task-list">
+        {% for task in tasks %}
+            {% set overdue = task.due_date and task.due_date < today and task.status != 'Completed' %}
+            {% set due_soon = task.due_date and task.due_date <= today + timedelta(days=3) and task.status != 'Completed' and not overdue %}
+            <article class="task-card {% if overdue %}overdue{% elif due_soon %}due-soon{% endif %}">
+                <div class="task-header">
+                    <div>
+                        <h2 class="task-title">{{ task.title }}</h2>
+                    </div>
+                    <div class="task-meta">
+                        <span class="badge badge-priority-{{ task.priority.lower() }}">{{ task.priority }}</span>
+                        <span class="badge badge-status-{{ task.status.lower().replace(' ', '-') }}">{{ task.status }}</span>
+                    </div>
+                </div>
+
+                <div class="task-content">
+                    <div>
+                        {% if task.subject %}
+                            <div class="subject-badge">
+                                {{ task.subject.name }}
+                                <span class="subject-badge institution {% if task.subject.university == 'IITM' %}iitm{% endif %}">{{ task.subject.university }}</span>
+                            </div>
+                        {% else %}
+                            <div class="subject-badge">No subject</div>
+                        {% endif %}
+
+                        {% if task.description %}
+                            <p class="task-description">{{ task.description }}</p>
+                        {% endif %}
+                    </div>
+
+                    <div>
+                        {% if task.due_date %}
+                            <div class="task-due {% if overdue %}overdue{% elif due_soon %}due-soon{% endif %}">
+                                {{ task.due_date.strftime('%d %b %Y') }}
+                                {% if overdue %}
+                                    <span style="color: #c0392b; font-size: 0.8rem; font-weight: 700;">Overdue</span>
+                                {% elif due_soon %}
+                                    <span style="color: #d35400; font-size: 0.8rem; font-weight: 700;">Due soon</span>
+                                {% endif %}
+                            </div>
+                        {% else %}
+                            <div class="task-due">No due date</div>
+                        {% endif %}
+                    </div>
+
+                    <div class="task-actions">
+                        <form method="POST" action="{{ url_for('tasks.toggle_status', task_id=task.id) }}">
+                            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                            <button type="submit" class="small-btn toggle-status">Toggle Status</button>
+                        </form>
+                        <a href="{{ url_for('tasks.edit', task_id=task.id) }}" class="small-btn btn-edit">Edit</a>
+                        <form method="POST" action="{{ url_for('tasks.delete', task_id=task.id) }}" onsubmit="return confirm('Delete this task permanently?');">
+                            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                            <button type="submit" class="small-btn btn-delete">Delete</button>
+                        </form>
+                    </div>
+                </div>
+            </article>
+        {% endfor %}
+    </div>
+{% else %}
+    <div class="empty-state">
+        <h3>No tasks found</h3>
+        <p>There are no tasks matching your current filters yet.</p>
+    </div>
+{% endif %}
+{% endblock %}

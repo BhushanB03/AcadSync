@@ -18,6 +18,15 @@ class User(UserMixin, db.Model):
     created_at = db.Column(db.DateTime, default=datetime.utcnow, nullable=False)
     updated_at = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow, nullable=False)
 
+    # Relationship to tasks for the unified task list.
+    tasks = db.relationship(
+        'Task',
+        backref='user',
+        lazy=True,
+        cascade='all, delete-orphan',
+        passive_deletes=True
+    )
+
     def __repr__(self):
         return f'<User {self.email}>'
 

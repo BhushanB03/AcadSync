@@ -24,6 +24,15 @@ class Subject(db.Model):
 
     # Relationship to User
     user = db.relationship('User', backref='subjects', lazy=True)
+
+    # Tasks linked to this subject. If the subject is deleted, the linked tasks
+    # should retain their value by clearing the subject_id instead of being deleted.
+    tasks = db.relationship(
+        'Task',
+        backref='subject',
+        lazy=True,
+        passive_deletes=True
+    )
     
     # Relationships for grade components and boundaries
     components = db.relationship(

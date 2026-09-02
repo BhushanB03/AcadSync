@@ -137,6 +137,40 @@
         padding: 2rem 1rem;
         text-align: center;
     }
+    .task-preview-list {
+        display: flex;
+        flex-direction: column;
+        gap: 0.85rem;
+    }
+    .task-preview-item {
+        padding: 0.85rem 1rem;
+        border-radius: 8px;
+        background: #f8f9fa;
+        border: 1px solid #ecf0f1;
+    }
+    .task-preview-item h4 {
+        margin: 0 0 0.35rem 0;
+        color: #2c3e50;
+        font-size: 1rem;
+    }
+    .task-preview-meta {
+        color: #7f8c8d;
+        font-size: 0.9rem;
+    }
+    .task-preview-overdue {
+        color: #c0392b;
+        font-weight: 600;
+    }
+    .task-preview-link {
+        display: inline-block;
+        margin-top: 1rem;
+        font-weight: 600;
+        color: #3498db;
+        text-decoration: none;
+    }
+    .task-preview-link:hover {
+        text-decoration: underline;
+    }
     .back-link {
         display: inline-block;
         margin-bottom: 1rem;
@@ -228,10 +262,35 @@
     <!-- Tasks Section -->
     <div class="section-card">
         <h2>✓ Tasks</h2>
-        <div class="coming-soon">
-            <p>Coming soon</p>
-            <p style="font-size: 0.9rem;">Manage assignments, projects, and deadlines.</p>
-        </div>
+        {% if upcoming_tasks %}
+            <div class="task-preview-list">
+                {% for task in upcoming_tasks %}
+                    {% set overdue = task.due_date and task.due_date < today and task.status != 'Completed' %}
+                    <div class="task-preview-item">
+                        <h4>{{ task.title }}</h4>
+                        <div class="task-preview-meta">
+                            {% if task.due_date %}
+                                <span class="{% if overdue %}task-preview-overdue{% endif %}">
+                                    Due: {{ task.due_date.strftime('%d %b %Y') }}
+                                </span>
+                                {% if overdue %}
+                                    <span class="task-preview-overdue"> • Overdue</span>
+                                {% endif %}
+                            {% else %}
+                                <span>No due date</span>
+                            {% endif %}
+                            <span> • {{ task.status }}</span>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+            <a href="{{ url_for('tasks.index', subject_id=subject.id) }}" class="task-preview-link">View All Tasks</a>
+        {% else %}
+            <div class="coming-soon">
+                <p>No upcoming tasks for this subject.</p>
+            </div>
+            <a href="{{ url_for('tasks.index', subject_id=subject.id) }}" class="task-preview-link">View All Tasks</a>
+        {% endif %}
     </div>
 
     <!-- Attendance/Progress Section -->

@@ -1,0 +1,162 @@
+{% extends "base.html" %}
+
+{% block title %}{% if task %}Edit Task{% else %}Add Task{% endif %} — AcadSync{% endblock %}
+
+{% block extra_css %}
+<style>
+    .page-header {
+        margin-bottom: 1.5rem;
+    }
+
+    .page-header h1 {
+        color: #2c3e50;
+        margin-bottom: 0.5rem;
+    }
+
+    .page-header p {
+        color: #7f8c8d;
+    }
+
+    .form-card {
+        background: white;
+        border-radius: 10px;
+        padding: 2rem;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+        max-width: 800px;
+    }
+
+    .form-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+        gap: 1.25rem;
+    }
+
+    .form-group {
+        display: flex;
+        flex-direction: column;
+        gap: 0.5rem;
+    }
+
+    .form-group.full-width {
+        grid-column: 1 / -1;
+    }
+
+    .form-group label {
+        font-weight: 600;
+        color: #2c3e50;
+    }
+
+    .form-group input,
+    .form-group select,
+    .form-group textarea {
+        width: 100%;
+        padding: 0.75rem 0.8rem;
+        border: 1px solid #dfe6e9;
+        border-radius: 8px;
+        font-size: 1rem;
+        font-family: inherit;
+    }
+
+    .form-group textarea {
+        min-height: 120px;
+        resize: vertical;
+    }
+
+    .form-actions {
+        display: flex;
+        gap: 1rem;
+        margin-top: 1.5rem;
+        flex-wrap: wrap;
+    }
+
+    .btn {
+        display: inline-block;
+        padding: 0.8rem 1.3rem;
+        border: none;
+        border-radius: 8px;
+        font-weight: 600;
+        cursor: pointer;
+        text-decoration: none;
+        text-align: center;
+    }
+
+    .btn-primary {
+        background: #2ecc71;
+        color: white;
+    }
+
+    .btn-secondary {
+        background: #ecf0f1;
+        color: #2c3e50;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <h1>{% if task %}Edit Task{% else %}Add a New Task{% endif %}</h1>
+    <p>Track work that spans subjects or any standalone academic task.</p>
+</div>
+
+<div class="form-card">
+    <form method="POST" action="{% if task %}{{ url_for('tasks.edit', task_id=task.id) }}{% else %}{{ url_for('tasks.add') }}{% endif %}">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+
+        <div class="form-grid">
+            <div class="form-group full-width">
+                <label for="title">Title</label>
+                <input id="title" name="title" type="text" value="{{ task.title if task else '' }}" required>
+            </div>
+
+            <div class="form-group full-width">
+                <label for="description">Description</label>
+                <textarea id="description" name="description">{{ task.description if task else '' }}</textarea>
+            </div>
+
+            <div class="form-group">
+                <label for="subject_id">Subject</label>
+                <select id="subject_id" name="subject_id">
+                    <option value="">No Subject</option>
+                    {% for subject in subjects %}
+                        <option value="{{ subject.id }}" {% if task and task.subject_id == subject.id %}selected{% endif %}>
+                            {{ subject.name }} ({{ subject.university }})
+                        </option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="due_date">Due Date</label>
+                <input id="due_date" name="due_date" type="date" value="{{ task.due_date.isoformat() if task and task.due_date else '' }}">
+            </div>
+
+            <div class="form-group">
+                <label for="priority">Priority</label>
+                <select id="priority" name="priority">
+                    {% for priority in ['High', 'Medium', 'Low'] %}
+                        <option value="{{ priority }}" {% if task and task.priority == priority %}selected{% elif not task and priority == 'Medium' %}selected{% endif %}>
+                            {{ priority }}
+                        </option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="status">Status</label>
+                <select id="status" name="status">
+                    {% for status in ['Not Started', 'In Progress', 'Completed'] %}
+                        <option value="{{ status }}" {% if task and task.status == status %}selected{% elif not task and status == 'Not Started' %}selected{% endif %}>
+                            {{ status }}
+                        </option>
+                    {% endfor %}
+                </select>
+            </div>
+        </div>
+
+        <div class="form-actions">
+            <button type="submit" class="btn btn-primary">{% if task %}Save Changes{% else %}Create Task{% endif %}</button>
+            <a href="{{ url_for('tasks.index') }}" class="btn btn-secondary">Cancel</a>
+        </div>
+    </form>
+</div>
+{% endblock %}
