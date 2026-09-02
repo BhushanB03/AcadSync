@@ -93,7 +93,7 @@
             <a href="/" class="nav-brand">AcadSync</a>
             <ul class="nav-links">
                 {% if current_user.is_authenticated %}
-                    <li><a href="/dashboard">Dashboard</a></li>
+                    <li><a href="{{ url_for('auth.dashboard') }}">Dashboard</a></li>
                     <li><a href="{{ url_for('subjects.index') }}">My Subjects</a></li>
                     <li><a href="{{ url_for('tasks.index') }}">My Tasks</a></li>
                     <li><a href="{{ url_for('auth.logout') }}">Logout ({{ current_user.name }})</a></li>

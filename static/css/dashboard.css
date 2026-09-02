@@ -1,78 +1,593 @@
 /**
- * Dashboard Segmented Control Styles
- * 
- * This file contains the styling for the segmented tab switcher used
- * in the "My Subjects" section of the dashboard.
- * 
- * Visual design: Two equal-width buttons sitting together in a bordered
- * rectangle, similar to iOS segmented controls. The active tab has a
- * filled background, while the inactive tab has a transparent background.
+ * AcadSync - Dashboard Styles
+ * Phase 7: Prominent Dual-University Segmented Switcher & Unified Dashboard
  */
 
-/* Segmented Control Container */
-.segmented-control {
-    display: inline-flex;
-    border: 1px solid #d0d0d0;
-    border-radius: 4px;
-    overflow: hidden;
-    margin-bottom: 1.5rem;
-    background-color: #f5f5f5;
+/* Dashboard Header & Welcome */
+.dashboard-header {
+    background: white;
+    padding: 1.75rem 2rem;
+    border-radius: 12px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+    margin-bottom: 1.75rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 1rem;
 }
 
-/* Individual Tab Buttons */
-.segmented-tab {
-    flex: 1;
-    min-width: 120px;
-    padding: 0.75rem 1.5rem;
-    border: none;
-    background-color: transparent;
+.welcome-text h1 {
+    font-size: 1.75rem;
     color: #2c3e50;
-    font-size: 1rem;
-    font-weight: 600;
+    margin-bottom: 0.25rem;
+}
+
+.welcome-text p {
+    color: #7f8c8d;
+    font-size: 0.95rem;
+}
+
+/* Quick Actions in Header */
+.header-actions {
+    display: flex;
+    gap: 0.75rem;
+    flex-wrap: wrap;
+}
+
+/* ==========================================================================
+   PROMINENT SEGMENTED SWITCHER (Front & Center)
+   ========================================================================== */
+.switcher-wrapper {
+    margin-bottom: 2rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.switcher-label {
+    font-size: 0.85rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: #7f8c8d;
+}
+
+.segmented-switcher {
+    display: flex;
+    width: 100%;
+    max-width: 650px;
+    background: #e2e8f0;
+    padding: 6px;
+    border-radius: 14px;
+    box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.06), 0 2px 8px rgba(0, 0, 0, 0.04);
+    position: relative;
+    gap: 6px;
+}
+
+.switcher-tab {
+    flex: 1;
+    padding: 1rem 1.5rem;
+    border: 2px solid transparent;
+    border-radius: 10px;
+    background: transparent;
+    color: #4a5568;
+    font-size: 1.25rem;
+    font-weight: 700;
+    letter-spacing: 0.5px;
     cursor: pointer;
-    transition: all 0.3s ease;
-    text-align: center;
+    transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.6rem;
     user-select: none;
 }
 
-/* Hover state for inactive tabs */
-.segmented-tab:not(.active):hover {
-    background-color: rgba(52, 152, 219, 0.1);
-    color: #3498db;
+.switcher-tab:hover:not(.active) {
+    background: rgba(255, 255, 255, 0.6);
+    color: #2d3748;
 }
 
-/* Active Tab State */
-.segmented-tab.active {
-    background-color: #2c3e50;
+.switcher-tab.active {
+    background: #1e293b;
+    color: #ffffff;
+    box-shadow: 0 4px 12px rgba(15, 23, 42, 0.2);
+    border-color: #0f172a;
+}
+
+.switcher-tab.active.tab-iitm {
+    background: #0284c7;
+    border-color: #0369a1;
+    box-shadow: 0 4px 14px rgba(2, 132, 199, 0.35);
+}
+
+.switcher-tab.active.tab-vit {
+    background: #e11d48;
+    border-color: #be123c;
+    box-shadow: 0 4px 14px rgba(225, 29, 72, 0.35);
+}
+
+.switcher-badge {
+    font-size: 0.75rem;
+    font-weight: 600;
+    padding: 0.2rem 0.6rem;
+    border-radius: 20px;
+    background: rgba(0, 0, 0, 0.08);
+    color: inherit;
+}
+
+.switcher-tab.active .switcher-badge {
+    background: rgba(255, 255, 255, 0.25);
+    color: #ffffff;
+}
+
+/* ==========================================================================
+   OVERDUE ALERT BANNER
+   ========================================================================== */
+.overdue-banner {
+    background: linear-gradient(135deg, #fff5f5 0%, #fed7d7 100%);
+    border: 1px solid #feb2b2;
+    border-left: 6px solid #e53e3e;
+    padding: 1rem 1.25rem;
+    border-radius: 10px;
+    margin-bottom: 2rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 1rem;
+    flex-wrap: wrap;
+    box-shadow: 0 2px 8px rgba(229, 62, 62, 0.1);
+}
+
+.overdue-content {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    color: #9b2c2c;
+}
+
+.overdue-icon {
+    font-size: 1.5rem;
+    line-height: 1;
+}
+
+.overdue-title {
+    font-weight: 700;
+    font-size: 1rem;
+    margin-bottom: 0.15rem;
+}
+
+.overdue-sub {
+    font-size: 0.85rem;
+    color: #c53030;
+}
+
+.overdue-link {
+    background: #e53e3e;
     color: white;
-    box-shadow: inset 0 0 0 1px transparent;
+    padding: 0.5rem 1rem;
+    border-radius: 6px;
+    text-decoration: none;
+    font-size: 0.85rem;
+    font-weight: 600;
+    transition: background-color 0.2s ease;
+    white-space: nowrap;
 }
 
-/* Active tab hover state */
-.segmented-tab.active:hover {
-    background-color: #1a252f;
+.overdue-link:hover {
+    background: #c53030;
 }
 
-/* Responsive Design for Mobile */
-@media (max-width: 600px) {
-    .segmented-control {
-        width: 100%;
+/* ==========================================================================
+   DASHBOARD CONTENT GRID
+   ========================================================================== */
+.dashboard-grid {
+    display: grid;
+    grid-template-columns: 1.1fr 0.9fr;
+    gap: 2rem;
+    margin-bottom: 2.5rem;
+}
+
+@media (max-width: 960px) {
+    .dashboard-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+.dashboard-card {
+    background: white;
+    border-radius: 12px;
+    padding: 1.75rem;
+    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.06);
+    display: flex;
+    flex-direction: column;
+}
+
+.card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1.25rem;
+    padding-bottom: 0.75rem;
+    border-bottom: 2px solid #f1f5f9;
+}
+
+.card-header h2 {
+    font-size: 1.25rem;
+    color: #1e293b;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.card-count-badge {
+    font-size: 0.8rem;
+    padding: 0.2rem 0.6rem;
+    border-radius: 12px;
+    background: #f1f5f9;
+    color: #64748b;
+    font-weight: 700;
+}
+
+/* Subjects Section inside Dashboard */
+.subjects-preview-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+    gap: 1rem;
+    margin-bottom: 1.25rem;
+}
+
+.subject-mini-card {
+    background: #f8fafc;
+    border: 1px solid #e2e8f0;
+    border-radius: 10px;
+    padding: 1.1rem;
+    transition: all 0.2s ease;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    text-decoration: none;
+    color: inherit;
+    position: relative;
+    overflow: hidden;
+}
+
+.subject-mini-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+    border-color: #cbd5e1;
+    background: #ffffff;
+}
+
+.subject-mini-card.iitm {
+    border-left: 4px solid #0284c7;
+}
+
+.subject-mini-card.vit {
+    border-left: 4px solid #e11d48;
+}
+
+.subject-mini-name {
+    font-size: 1.05rem;
+    font-weight: 700;
+    color: #1e293b;
+    margin-bottom: 0.35rem;
+    line-height: 1.3;
+}
+
+.subject-mini-code {
+    font-size: 0.85rem;
+    color: #64748b;
+    font-weight: 600;
+    margin-bottom: 0.75rem;
+}
+
+.subject-mini-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 0.8rem;
+    color: #94a3b8;
+    margin-top: 0.5rem;
+    padding-top: 0.5rem;
+    border-top: 1px dashed #e2e8f0;
+}
+
+.subject-type-pill {
+    padding: 0.15rem 0.5rem;
+    background: #e2e8f0;
+    border-radius: 4px;
+    font-size: 0.75rem;
+    color: #475569;
+    font-weight: 500;
+}
+
+/* Tasks Preview Section inside Dashboard */
+.tasks-preview-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.85rem;
+    margin-bottom: 1.25rem;
+}
+
+.task-preview-item {
+    background: #f8fafc;
+    border: 1px solid #e2e8f0;
+    border-radius: 10px;
+    padding: 1rem 1.1rem;
+    transition: all 0.2s ease;
+    display: flex;
+    flex-direction: column;
+    gap: 0.6rem;
+}
+
+.task-preview-item:hover {
+    background: #ffffff;
+    box-shadow: 0 3px 8px rgba(0, 0, 0, 0.05);
+}
+
+.task-preview-item.overdue {
+    border-left: 4px solid #e53e3e;
+    background: #fff8f8;
+}
+
+.task-preview-item.due-soon {
+    border-left: 4px solid #dd6b20;
+}
+
+.task-preview-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 0.75rem;
+}
+
+.task-preview-title {
+    font-size: 0.95rem;
+    font-weight: 700;
+    color: #1e293b;
+    margin: 0;
+    line-height: 1.4;
+}
+
+.task-preview-badges {
+    display: flex;
+    gap: 0.4rem;
+    flex-wrap: wrap;
+}
+
+.task-preview-bottom {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 0.8rem;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+}
+
+.task-scope-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.3rem;
+    font-weight: 600;
+    color: #475569;
+    background: #e2e8f0;
+    padding: 0.2rem 0.55rem;
+    border-radius: 6px;
+    font-size: 0.75rem;
+}
+
+.task-scope-badge.standalone {
+    background: #f1f5f9;
+    color: #64748b;
+    border: 1px dashed #cbd5e1;
+}
+
+.task-preview-due {
+    font-weight: 600;
+    color: #64748b;
+}
+
+.task-preview-due.overdue {
+    color: #e53e3e;
+}
+
+.task-preview-due.due-soon {
+    color: #dd6b20;
+}
+
+/* Badges */
+.badge-priority {
+    font-size: 0.7rem;
+    font-weight: 700;
+    padding: 0.15rem 0.5rem;
+    border-radius: 12px;
+    color: white;
+}
+
+.badge-priority-high {
+    background-color: #e53e3e;
+}
+
+.badge-priority-medium {
+    background-color: #dd6b20;
+}
+
+.badge-priority-low {
+    background-color: #38a169;
+}
+
+.badge-status {
+    font-size: 0.7rem;
+    font-weight: 600;
+    padding: 0.15rem 0.5rem;
+    border-radius: 12px;
+    color: white;
+}
+
+.badge-status-not-started {
+    background-color: #718096;
+}
+
+.badge-status-in-progress {
+    background-color: #3182ce;
+}
+
+/* Empty States */
+.empty-box {
+    text-align: center;
+    padding: 2.5rem 1rem;
+    color: #94a3b8;
+    background: #f8fafc;
+    border: 1px dashed #cbd5e1;
+    border-radius: 8px;
+    margin-bottom: 1rem;
+}
+
+.empty-box p {
+    margin-bottom: 0.75rem;
+    font-size: 0.95rem;
+}
+
+/* Card Bottom Links */
+.card-view-all {
+    margin-top: auto;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.4rem;
+    padding: 0.65rem 1rem;
+    background: #f1f5f9;
+    color: #334155;
+    text-decoration: none;
+    font-weight: 600;
+    font-size: 0.9rem;
+    border-radius: 8px;
+    transition: all 0.2s ease;
+    text-align: center;
+}
+
+.card-view-all:hover {
+    background: #e2e8f0;
+    color: #0f172a;
+}
+
+/* ==========================================================================
+   QUICK ACTIONS SECTION
+   ========================================================================== */
+.quick-actions-bar {
+    background: white;
+    border-radius: 12px;
+    padding: 1.5rem 2rem;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+    margin-top: 1rem;
+}
+
+.quick-actions-title {
+    font-size: 1.1rem;
+    color: #1e293b;
+    margin-bottom: 1rem;
+    font-weight: 700;
+}
+
+.quick-actions-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1rem;
+}
+
+.action-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.6rem;
+    padding: 0.85rem 1.25rem;
+    border-radius: 8px;
+    font-weight: 600;
+    font-size: 0.95rem;
+    text-decoration: none;
+    transition: all 0.2s ease;
+    cursor: pointer;
+    border: none;
+}
+
+.action-btn-primary {
+    background-color: #2563eb;
+    color: white;
+}
+
+.action-btn-primary:hover {
+    background-color: #1d4ed8;
+}
+
+.action-btn-success {
+    background-color: #16a34a;
+    color: white;
+}
+
+.action-btn-success:hover {
+    background-color: #15803d;
+}
+
+.action-btn-ai {
+    background-color: #f1f5f9;
+    color: #94a3b8;
+    border: 1px dashed #cbd5e1;
+    cursor: not-allowed;
+    position: relative;
+}
+
+.action-btn-ai .ai-tag {
+    font-size: 0.65rem;
+    background: #e2e8f0;
+    color: #64748b;
+    padding: 0.15rem 0.4rem;
+    border-radius: 4px;
+    text-transform: uppercase;
+    font-weight: 700;
+}
+
+/* ==========================================================================
+   CONTENT VIEW TOGGLING
+   ========================================================================== */
+.university-content {
+    display: none;
+    animation: fadeIn 0.25s ease;
+}
+
+.university-content.active {
+    display: block;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(4px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Responsive adjustments */
+@media (max-width: 640px) {
+    .dashboard-header {
+        padding: 1.25rem;
+    }
+    
+    .switcher-tab {
+        padding: 0.75rem 1rem;
+        font-size: 1.1rem;
     }
 
-    .segmented-tab {
-        min-width: 100px;
-        padding: 0.65rem 1rem;
-        font-size: 0.95rem;
+    .dashboard-card {
+        padding: 1.25rem;
     }
-}
 
-/* Focus State for Accessibility */
-.segmented-tab:focus {
-    outline: 2px solid #3498db;
-    outline-offset: -2px;
-}
-
-.segmented-tab.active:focus {
-    outline: 2px solid #5dade2;
-    outline-offset: -2px;
+    .subjects-preview-grid {
+        grid-template-columns: 1fr;
+    }
 }

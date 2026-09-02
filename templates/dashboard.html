@@ -4,241 +4,358 @@
 
 {% block extra_css %}
 <link rel="stylesheet" href="{{ url_for('static', filename='css/dashboard.css') }}">
-<style>
-    .dashboard {
-        background: white;
-        padding: 2rem;
-        border-radius: 8px;
-        box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-        margin-bottom: 2rem;
-    }
-    .dashboard h1 {
-        color: #2c3e50;
-        margin-bottom: 1rem;
-    }
-    .dashboard p {
-        color: #666;
-        margin-bottom: 1rem;
-    }
-    
-    /* My Subjects Card */
-    .my-subjects-card {
-        background: white;
-        padding: 2rem;
-        border-radius: 8px;
-        box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-    }
-    .my-subjects-card h2 {
-        color: #2c3e50;
-        margin-bottom: 1.5rem;
-        font-size: 1.4rem;
-    }
-    
-    /* Subjects List */
-    .subjects-list {
-        display: none;
-    }
-    .subjects-list.active {
-        display: block;
-    }
-    .subjects-list ul {
-        list-style: none;
-        padding: 0;
-        margin: 0;
-    }
-    .subjects-list li {
-        padding: 1rem;
-        margin-bottom: 0.75rem;
-        background-color: #f8f9fa;
-        border-left: 4px solid #3498db;
-        border-radius: 4px;
-        transition: all 0.3s;
-    }
-    .subjects-list li:hover {
-        background-color: #e8f4f8;
-        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-    }
-    .subjects-list li.iitm {
-        border-left-color: #3498db;
-    }
-    .subjects-list li.vit {
-        border-left-color: #e74c3c;
-    }
-    .subject-name {
-        font-weight: 600;
-        color: #2c3e50;
-        margin-bottom: 0.25rem;
-    }
-    .subject-code {
-        color: #7f8c8d;
-        font-size: 0.9rem;
-        margin-bottom: 0.75rem;
-    }
-    .subject-actions {
-        display: flex;
-        gap: 0.5rem;
-        margin-top: 0.75rem;
-    }
-    .subject-action-btn {
-        padding: 0.4rem 0.8rem;
-        border: none;
-        border-radius: 4px;
-        font-size: 0.85rem;
-        font-weight: 500;
-        cursor: pointer;
-        text-decoration: none;
-        text-align: center;
-        transition: background-color 0.3s;
-    }
-    .archive-btn {
-        background-color: #f39c12;
-        color: white;
-    }
-    .archive-btn:hover {
-        background-color: #e67e22;
-    }
-    .empty-subjects {
-        padding: 2rem 1rem;
-        text-align: center;
-        color: #95a5a6;
-        font-style: italic;
-    }
-    .view-all-link {
-        display: inline-block;
-        margin-top: 1rem;
-        padding: 0.75rem 1.5rem;
-        background-color: #3498db;
-        color: white;
-        text-decoration: none;
-        border-radius: 4px;
-        font-weight: 500;
-        transition: background-color 0.3s;
-    }
-    .view-all-link:hover {
-        background-color: #2980b9;
-    }
-</style>
 {% endblock %}
 
 {% block content %}
-<!-- Welcome Section -->
-<div class="dashboard">
-    <h1>Welcome, {{ user.name }}!</h1>
-    <p>You are logged in as <strong>{{ user.email }}</strong></p>
-    <p>Account created on <strong>{{ user.created_at.strftime('%B %d, %Y') }}</strong></p>
+<!-- Welcome & Quick Info Header -->
+<div class="dashboard-header">
+    <div class="welcome-text">
+        <h1>Welcome back, {{ user.name }}!</h1>
+        <p>Manage your academic journey across <strong>IITM</strong> and <strong>VIT</strong> in one place.</p>
+    </div>
 </div>
 
-<!-- My Subjects Section -->
-<div class="my-subjects-card">
-    <h2>📚 My Subjects</h2>
-    
-    <!-- Segmented Tab Switcher -->
-    <div class="segmented-control">
-        <button class="segmented-tab active" data-tab="iitm" id="iitmTab">
-            IITM
+<!-- ========================================================================= -->
+<!-- PROMINENT SEGMENTED UNIVERSITY SWITCHER                                   -->
+<!-- ========================================================================= -->
+<div class="switcher-wrapper">
+    <span class="switcher-label">Academic Context</span>
+    <div class="segmented-switcher" role="tablist" aria-label="Select University Context">
+        <button type="button" 
+                class="switcher-tab tab-iitm active" 
+                id="tabBtnIITM" 
+                role="tab" 
+                aria-selected="true" 
+                aria-controls="iitmContent"
+                data-target="iitmContent">
+            <span>IITM</span>
+            <span class="switcher-badge">{{ iitm_subjects|length }} Subjects</span>
         </button>
-        <button class="segmented-tab" data-tab="vit" id="vitTab">
-            VIT
+        <button type="button" 
+                class="switcher-tab tab-vit" 
+                id="tabBtnVIT" 
+                role="tab" 
+                aria-selected="false" 
+                aria-controls="vitContent"
+                data-target="vitContent">
+            <span>VIT</span>
+            <span class="switcher-badge">{{ vit_subjects|length }} Subjects</span>
         </button>
     </div>
-    
-    <!-- IITM Subjects List (shown by default) -->
-    <div id="iitmSubjectsList" class="subjects-list active">
-        {% if iitm_subjects %}
-            <ul>
-                {% for subject in iitm_subjects %}
-                <li class="iitm">
-                    <div class="subject-name">{{ subject.name }}</div>
-                    <div class="subject-code">{{ subject.code }}</div>
-                    <div class="subject-actions">
-                        <form method="POST" action="{{ url_for('subjects.archive', subject_id=subject.id) }}" style="display: inline;">
-                            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
-                            <button type="submit" class="subject-action-btn archive-btn" onclick="return confirm('Archive this subject?');">Archive</button>
-                        </form>
-                    </div>
-                </li>
-                {% endfor %}
-            </ul>
-        {% else %}
-            <div class="empty-subjects">No active IITM subjects</div>
-        {% endif %}
-    </div>
-    
-    <!-- VIT Subjects List (hidden by default) -->
-    <div id="vitSubjectsList" class="subjects-list">
-        {% if vit_subjects %}
-            <ul>
-                {% for subject in vit_subjects %}
-                <li class="vit">
-                    <div class="subject-name">{{ subject.name }}</div>
-                    <div class="subject-code">{{ subject.code }}</div>
-                    <div class="subject-actions">
-                        <form method="POST" action="{{ url_for('subjects.archive', subject_id=subject.id) }}" style="display: inline;">
-                            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
-                            <button type="submit" class="subject-action-btn archive-btn" onclick="return confirm('Archive this subject?');">Archive</button>
-                        </form>
-                    </div>
-                </li>
-                {% endfor %}
-            </ul>
-        {% else %}
-            <div class="empty-subjects">No active VIT subjects</div>
-        {% endif %}
-    </div>
-    
-    <!-- View All Subjects Link -->
-    <a href="{{ url_for('subjects.index') }}" class="view-all-link">View All Subjects →</a>
 </div>
 
+<!-- ========================================================================= -->
+<!-- IITM UNIVERSITY CONTENT BLOCK                                             -->
+<!-- ========================================================================= -->
+<div id="iitmContent" class="university-content active" role="tabpanel" aria-labelledby="tabBtnIITM">
+    
+    <!-- Overdue Alert Banner (IITM context + Standalone) -->
+    {% if iitm_overdue_count > 0 %}
+    <div class="overdue-banner">
+        <div class="overdue-content">
+            <span class="overdue-icon">⚠️</span>
+            <div>
+                <div class="overdue-title">Attention: Overdue Tasks</div>
+                <div class="overdue-sub">You have <strong>{{ iitm_overdue_count }}</strong> overdue task{{ 's' if iitm_overdue_count != 1 else '' }} in your IITM context.</div>
+            </div>
+        </div>
+        <a href="{{ url_for('tasks.index', university='IITM', status='Not Started') }}" class="overdue-link">Review Overdue Tasks &rarr;</a>
+    </div>
+    {% endif %}
+
+    <!-- Main Grid: Active Subjects & Upcoming Tasks -->
+    <div class="dashboard-grid">
+        
+        <!-- Active Subjects Card -->
+        <div class="dashboard-card">
+            <div class="card-header">
+                <h2>
+                    <span>📚</span> Active Subjects
+                </h2>
+                <span class="card-count-badge">{{ iitm_subjects|length }} Active</span>
+            </div>
+
+            {% if iitm_subjects %}
+                <div class="subjects-preview-grid">
+                    {% for subject in iitm_subjects %}
+                    <a href="{{ url_for('subjects.detail', subject_id=subject.id) }}" class="subject-mini-card iitm">
+                        <div>
+                            <div class="subject-mini-name">{{ subject.name }}</div>
+                            <div class="subject-mini-code">{{ subject.code }}</div>
+                        </div>
+                        <div class="subject-mini-footer">
+                            <span class="subject-type-pill">{{ subject.subject_type }}</span>
+                            <span>{{ subject.term }}</span>
+                        </div>
+                    </a>
+                    {% endfor %}
+                </div>
+            {% else %}
+                <div class="empty-box">
+                    <p>No active IITM subjects found.</p>
+                    <a href="{{ url_for('subjects.add') }}" class="action-btn action-btn-success" style="display: inline-flex; padding: 0.5rem 1rem; font-size: 0.85rem;">+ Add IITM Subject</a>
+                </div>
+            {% endif %}
+
+            <a href="{{ url_for('subjects.index', university='IITM') }}" class="card-view-all">
+                View All IITM Subjects &rarr;
+            </a>
+        </div>
+
+        <!-- Upcoming Tasks Card (IITM + Standalone) -->
+        <div class="dashboard-card">
+            <div class="card-header">
+                <h2>
+                    <span>📋</span> Upcoming Tasks
+                </h2>
+                <span class="card-count-badge">{{ iitm_tasks|length }} Pending</span>
+            </div>
+
+            {% if iitm_tasks %}
+                <div class="tasks-preview-list">
+                    {% for task in iitm_tasks %}
+                        {% set is_overdue = task.due_date and task.due_date < today and task.status != 'Completed' %}
+                        {% set is_due_soon = task.due_date and task.due_date <= today + timedelta(days=3) and task.status != 'Completed' and not is_overdue %}
+                        <div class="task-preview-item {% if is_overdue %}overdue{% elif is_due_soon %}due-soon{% endif %}">
+                            <div class="task-preview-top">
+                                <h3 class="task-preview-title">{{ task.title }}</h3>
+                                <div class="task-preview-badges">
+                                    <span class="badge-priority badge-priority-{{ task.priority.lower() }}">{{ task.priority }}</span>
+                                    <span class="badge-status badge-status-{{ task.status.lower().replace(' ', '-') }}">{{ task.status }}</span>
+                                </div>
+                            </div>
+                            <div class="task-preview-bottom">
+                                <div>
+                                    {% if task.subject %}
+                                        <span class="task-scope-badge">📖 {{ task.subject.name }}</span>
+                                    {% else %}
+                                        <span class="task-scope-badge standalone">📌 Standalone</span>
+                                    {% endif %}
+                                </div>
+                                <div class="task-preview-due {% if is_overdue %}overdue{% elif is_due_soon %}due-soon{% endif %}">
+                                    {% if task.due_date %}
+                                        📅 {{ task.due_date.strftime('%d %b %Y') }}
+                                        {% if is_overdue %}(Overdue){% elif is_due_soon %}(Due soon){% endif %}
+                                    {% else %}
+                                        <span>No due date</span>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
+            {% else %}
+                <div class="empty-box">
+                    <p>No pending tasks for IITM.</p>
+                    <a href="{{ url_for('tasks.add') }}" class="action-btn action-btn-primary" style="display: inline-flex; padding: 0.5rem 1rem; font-size: 0.85rem;">+ Create Task</a>
+                </div>
+            {% endif %}
+
+            <a href="{{ url_for('tasks.index', university='IITM') }}" class="card-view-all">
+                View All IITM Tasks &rarr;
+            </a>
+        </div>
+
+    </div>
+
+    <!-- Quick Actions Bar -->
+    <div class="quick-actions-bar">
+        <div class="quick-actions-title">⚡ Quick Actions (IITM)</div>
+        <div class="quick-actions-grid">
+            <a href="{{ url_for('subjects.add') }}" class="action-btn action-btn-success">
+                <span>➕</span> Add Subject
+            </a>
+            <a href="{{ url_for('tasks.add') }}" class="action-btn action-btn-primary">
+                <span>📝</span> Add Task
+            </a>
+            <button type="button" class="action-btn action-btn-ai" disabled title="AI Tutor and Study Assistant coming in Phase 9">
+                <span>🤖</span> Ask AI <span class="ai-tag">Coming Soon</span>
+            </button>
+        </div>
+    </div>
+
+</div>
+
+<!-- ========================================================================= -->
+<!-- VIT UNIVERSITY CONTENT BLOCK                                              -->
+<!-- ========================================================================= -->
+<div id="vitContent" class="university-content" role="tabpanel" aria-labelledby="tabBtnVIT">
+    
+    <!-- Overdue Alert Banner (VIT context + Standalone) -->
+    {% if vit_overdue_count > 0 %}
+    <div class="overdue-banner">
+        <div class="overdue-content">
+            <span class="overdue-icon">⚠️</span>
+            <div>
+                <div class="overdue-title">Attention: Overdue Tasks</div>
+                <div class="overdue-sub">You have <strong>{{ vit_overdue_count }}</strong> overdue task{{ 's' if vit_overdue_count != 1 else '' }} in your VIT context.</div>
+            </div>
+        </div>
+        <a href="{{ url_for('tasks.index', university='VIT', status='Not Started') }}" class="overdue-link">Review Overdue Tasks &rarr;</a>
+    </div>
+    {% endif %}
+
+    <!-- Main Grid: Active Subjects & Upcoming Tasks -->
+    <div class="dashboard-grid">
+        
+        <!-- Active Subjects Card -->
+        <div class="dashboard-card">
+            <div class="card-header">
+                <h2>
+                    <span>📚</span> Active Subjects
+                </h2>
+                <span class="card-count-badge">{{ vit_subjects|length }} Active</span>
+            </div>
+
+            {% if vit_subjects %}
+                <div class="subjects-preview-grid">
+                    {% for subject in vit_subjects %}
+                    <a href="{{ url_for('subjects.detail', subject_id=subject.id) }}" class="subject-mini-card vit">
+                        <div>
+                            <div class="subject-mini-name">{{ subject.name }}</div>
+                            <div class="subject-mini-code">{{ subject.code }}</div>
+                        </div>
+                        <div class="subject-mini-footer">
+                            <span class="subject-type-pill">{{ subject.subject_type }}</span>
+                            <span>{{ subject.term }}</span>
+                        </div>
+                    </a>
+                    {% endfor %}
+                </div>
+            {% else %}
+                <div class="empty-box">
+                    <p>No active VIT subjects found.</p>
+                    <a href="{{ url_for('subjects.add') }}" class="action-btn action-btn-success" style="display: inline-flex; padding: 0.5rem 1rem; font-size: 0.85rem;">+ Add VIT Subject</a>
+                </div>
+            {% endif %}
+
+            <a href="{{ url_for('subjects.index', university='VIT') }}" class="card-view-all">
+                View All VIT Subjects &rarr;
+            </a>
+        </div>
+
+        <!-- Upcoming Tasks Card (VIT + Standalone) -->
+        <div class="dashboard-card">
+            <div class="card-header">
+                <h2>
+                    <span>📋</span> Upcoming Tasks
+                </h2>
+                <span class="card-count-badge">{{ vit_tasks|length }} Pending</span>
+            </div>
+
+            {% if vit_tasks %}
+                <div class="tasks-preview-list">
+                    {% for task in vit_tasks %}
+                        {% set is_overdue = task.due_date and task.due_date < today and task.status != 'Completed' %}
+                        {% set is_due_soon = task.due_date and task.due_date <= today + timedelta(days=3) and task.status != 'Completed' and not is_overdue %}
+                        <div class="task-preview-item {% if is_overdue %}overdue{% elif is_due_soon %}due-soon{% endif %}">
+                            <div class="task-preview-top">
+                                <h3 class="task-preview-title">{{ task.title }}</h3>
+                                <div class="task-preview-badges">
+                                    <span class="badge-priority badge-priority-{{ task.priority.lower() }}">{{ task.priority }}</span>
+                                    <span class="badge-status badge-status-{{ task.status.lower().replace(' ', '-') }}">{{ task.status }}</span>
+                                </div>
+                            </div>
+                            <div class="task-preview-bottom">
+                                <div>
+                                    {% if task.subject %}
+                                        <span class="task-scope-badge">📖 {{ task.subject.name }}</span>
+                                    {% else %}
+                                        <span class="task-scope-badge standalone">📌 Standalone</span>
+                                    {% endif %}
+                                </div>
+                                <div class="task-preview-due {% if is_overdue %}overdue{% elif is_due_soon %}due-soon{% endif %}">
+                                    {% if task.due_date %}
+                                        📅 {{ task.due_date.strftime('%d %b %Y') }}
+                                        {% if is_overdue %}(Overdue){% elif is_due_soon %}(Due soon){% endif %}
+                                    {% else %}
+                                        <span>No due date</span>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
+            {% else %}
+                <div class="empty-box">
+                    <p>No pending tasks for VIT.</p>
+                    <a href="{{ url_for('tasks.add') }}" class="action-btn action-btn-primary" style="display: inline-flex; padding: 0.5rem 1rem; font-size: 0.85rem;">+ Create Task</a>
+                </div>
+            {% endif %}
+
+            <a href="{{ url_for('tasks.index', university='VIT') }}" class="card-view-all">
+                View All VIT Tasks &rarr;
+            </a>
+        </div>
+
+    </div>
+
+    <!-- Quick Actions Bar -->
+    <div class="quick-actions-bar">
+        <div class="quick-actions-title">⚡ Quick Actions (VIT)</div>
+        <div class="quick-actions-grid">
+            <a href="{{ url_for('subjects.add') }}" class="action-btn action-btn-success">
+                <span>➕</span> Add Subject
+            </a>
+            <a href="{{ url_for('tasks.add') }}" class="action-btn action-btn-primary">
+                <span>📝</span> Add Task
+            </a>
+            <button type="button" class="action-btn action-btn-ai" disabled title="AI Tutor and Study Assistant coming in Phase 9">
+                <span>🤖</span> Ask AI <span class="ai-tag">Coming Soon</span>
+            </button>
+        </div>
+    </div>
+
+</div>
 {% endblock %}
 
 {% block extra_js %}
 <script>
     /**
-     * Dashboard Segmented Control Logic
-     * Handles switching between IITM and VIT subject lists.
-     * Only affects the "My Subjects" section on the dashboard.
+     * AcadSync - Dashboard University Switcher Logic
+     * Handles instant client-side switching between IITM and VIT contexts.
      */
-    (function() {
-        const iitmTab = document.getElementById('iitmTab');
-        const vitTab = document.getElementById('vitTab');
-        const iitmList = document.getElementById('iitmSubjectsList');
-        const vitList = document.getElementById('vitSubjectsList');
-        
-        if (!iitmTab || !vitTab) return; // Exit if tab elements don't exist
-        
-        /**
-         * switchToTab(tabName)
-         * Switches the visible subject list based on the selected tab.
-         * 
-         * @param {string} tabName - Either 'iitm' or 'vit'
-         */
-        function switchToTab(tabName) {
-            if (tabName === 'iitm') {
-                // Show IITM, hide VIT
-                iitmList.classList.add('active');
-                vitList.classList.remove('active');
-                iitmTab.classList.add('active');
-                vitTab.classList.remove('active');
-            } else if (tabName === 'vit') {
-                // Show VIT, hide IITM
-                iitmList.classList.remove('active');
-                vitList.classList.add('active');
-                iitmTab.classList.remove('active');
-                vitTab.classList.add('active');
+    document.addEventListener('DOMContentLoaded', function() {
+        const tabBtnIITM = document.getElementById('tabBtnIITM');
+        const tabBtnVIT = document.getElementById('tabBtnVIT');
+        const iitmContent = document.getElementById('iitmContent');
+        const vitContent = document.getElementById('vitContent');
+
+        if (!tabBtnIITM || !tabBtnVIT || !iitmContent || !vitContent) {
+            return;
+        }
+
+        function switchContext(target) {
+            if (target === 'IITM') {
+                // Activate IITM
+                tabBtnIITM.classList.add('active');
+                tabBtnIITM.setAttribute('aria-selected', 'true');
+                tabBtnVIT.classList.remove('active');
+                tabBtnVIT.setAttribute('aria-selected', 'false');
+
+                iitmContent.classList.add('active');
+                vitContent.classList.remove('active');
+            } else if (target === 'VIT') {
+                // Activate VIT
+                tabBtnVIT.classList.add('active');
+                tabBtnVIT.setAttribute('aria-selected', 'true');
+                tabBtnIITM.classList.remove('active');
+                tabBtnIITM.setAttribute('aria-selected', 'false');
+
+                vitContent.classList.add('active');
+                iitmContent.classList.remove('active');
             }
         }
-        
-        // Attach click event listeners to both tabs
-        iitmTab.addEventListener('click', function(e) {
+
+        tabBtnIITM.addEventListener('click', function(e) {
             e.preventDefault();
-            switchToTab('iitm');
+            switchContext('IITM');
         });
-        
-        vitTab.addEventListener('click', function(e) {
+
+        tabBtnVIT.addEventListener('click', function(e) {
             e.preventDefault();
-            switchToTab('vit');
+            switchContext('VIT');
         });
-    })();
+    });
 </script>
 {% endblock %}
