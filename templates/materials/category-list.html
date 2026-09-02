@@ -1,0 +1,194 @@
+{% extends "base.html" %}
+
+{% block title %}{{ category_label }} - {{ subject.name }}{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="page-header">
+        <div>
+            <h1>{{ category_label }}</h1>
+            <p class="subject-info">{{ subject.name }} ({{ subject.code }})</p>
+        </div>
+        <a href="{{ url_for('materials.study_material_home', subject_id=subject.id) }}" class="btn btn-secondary">Back to Materials</a>
+    </div>
+
+    <div class="action-bar">
+        <a href="{{ url_for('materials.upload_file', subject_id=subject.id, category=category) }}" class="btn btn-primary">Upload File</a>
+        <a href="{{ url_for('materials.add_link', subject_id=subject.id, category=category) }}" class="btn btn-primary">Add Link</a>
+        <a href="{{ url_for('materials.add_note', subject_id=subject.id, category=category) }}" class="btn btn-primary">Add Note</a>
+    </div>
+
+    {% if not materials %}
+        <div class="empty-state">
+            <h3>No {{ category_label.lower() }} yet</h3>
+            <p>Add your first material using the buttons above.</p>
+        </div>
+    {% else %}
+        <div class="materials-list">
+            {% for material in materials %}
+            <div class="material-card">
+                <div class="material-main">
+                    <div class="material-header">
+                        <h3>{{ material.title }}</h3>
+                        <span class="type-badge type-{{ material.material_type }}">
+                            {% if material.material_type == 'file' %}📁 File{% elif material.material_type == 'link' %}🔗 Link{% else %}📝 Note{% endif %}
+                        </span>
+                    </div>
+
+                    {% if material.material_type == 'file' %}
+                        <div class="material-actions">
+                            <a href="{{ url_for('materials.download_material', material_id=material.id) }}" class="btn btn-secondary" target="_blank" rel="noopener noreferrer">Download</a>
+                        </div>
+                    {% elif material.material_type == 'link' %}
+                        <div class="material-actions">
+                            <a href="{{ material.url }}" class="btn btn-secondary" target="_blank" rel="noopener noreferrer">Open Link</a>
+                        </div>
+                    {% else %}
+                        <details class="note-details">
+                            <summary>Show Note</summary>
+                            <div class="note-content">{{ material.note_content or 'No content provided.' }}</div>
+                        </details>
+                    {% endif %}
+                </div>
+
+                <form method="POST" action="{{ url_for('materials.delete_material', material_id=material.id) }}" class="delete-form">
+                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                    <button type="submit" class="btn btn-danger" onclick="return confirm('Delete this material?');">Delete</button>
+                </form>
+            </div>
+            {% endfor %}
+        </div>
+    {% endif %}
+</div>
+
+<style>
+    .action-bar {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.75rem;
+        margin: 1.5rem 0;
+    }
+
+    .materials-list {
+        display: grid;
+        gap: 1rem;
+    }
+
+    .material-card {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 1rem;
+        background: white;
+        border: 1px solid #e3e7eb;
+        border-radius: 12px;
+        padding: 1.25rem;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+    }
+
+    .material-main {
+        flex: 1;
+    }
+
+    .material-header {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        justify-content: space-between;
+        gap: 0.75rem;
+        margin-bottom: 0.75rem;
+    }
+
+    .material-header h3 {
+        margin: 0;
+        font-size: 1.2rem;
+    }
+
+    .type-badge {
+        display: inline-block;
+        padding: 0.35rem 0.75rem;
+        border-radius: 999px;
+        font-size: 0.8rem;
+        font-weight: 700;
+    }
+
+    .type-file {
+        background: #eaf4ff;
+        color: #1d5fbf;
+    }
+
+    .type-link {
+        background: #eafaf1;
+        color: #138a36;
+    }
+
+    .type-note {
+        background: #fff4dc;
+        color: #b7791f;
+    }
+
+    .material-actions {
+        margin-top: 0.5rem;
+    }
+
+    .note-details {
+        margin-top: 0.5rem;
+        border: 1px solid #e6e6e6;
+        border-radius: 8px;
+        background: #fafafa;
+    }
+
+    .note-details summary {
+        cursor: pointer;
+        padding: 0.75rem 1rem;
+        font-weight: 600;
+        color: #2c3e50;
+    }
+
+    .note-content {
+        padding: 0 1rem 1rem;
+        white-space: pre-wrap;
+        color: #444;
+        line-height: 1.6;
+    }
+
+    .delete-form {
+        margin-left: auto;
+    }
+
+    .btn-danger {
+        background-color: #e74c3c;
+        color: white;
+    }
+
+    .btn-danger:hover {
+        background-color: #c0392b;
+    }
+
+    .empty-state {
+        margin-top: 2rem;
+        padding: 2rem;
+        background: white;
+        border: 1px dashed #d0d7de;
+        border-radius: 8px;
+        text-align: center;
+        color: #666;
+    }
+
+    @media (max-width: 700px) {
+        .material-card {
+            flex-direction: column;
+            align-items: flex-start;
+        }
+
+        .delete-form {
+            width: 100%;
+            margin-left: 0;
+        }
+
+        .delete-form .btn {
+            width: 100%;
+        }
+    }
+</style>
+{% endblock %}

@@ -1,0 +1,63 @@
+{% extends "base.html" %}
+
+{% block title %}Add Link - {{ subject.name }}{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="page-header">
+        <div>
+            <h1>Add Link</h1>
+            <p class="subject-info">{{ subject.name }} ({{ subject.code }}) - {{ category_label }}</p>
+        </div>
+        <a href="{{ url_for('materials.category_list', subject_id=subject.id, category=category) }}" class="btn btn-secondary">Back</a>
+    </div>
+
+    <div class="form-card">
+        <form method="POST">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+
+            <div class="form-group">
+                <label for="title">Title</label>
+                <input type="text" id="title" name="title" required>
+            </div>
+
+            <div class="form-group">
+                <label for="url">URL</label>
+                <input type="url" id="url" name="url" placeholder="https://example.com" required>
+            </div>
+
+            <div class="form-actions">
+                <button type="submit" class="btn btn-primary">Save Link</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<style>
+    .form-card {
+        max-width: 600px;
+        margin: 2rem auto 0;
+        background: white;
+        border: 1px solid #e3e7eb;
+        border-radius: 12px;
+        padding: 1.5rem;
+    }
+
+    .form-group {
+        margin-bottom: 1rem;
+    }
+
+    .form-group label {
+        display: block;
+        margin-bottom: 0.5rem;
+        font-weight: 600;
+    }
+
+    .form-group input {
+        width: 100%;
+        padding: 0.75rem;
+        border: 1px solid #d7dfe5;
+        border-radius: 6px;
+    }
+</style>
+{% endblock %}

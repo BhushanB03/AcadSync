@@ -219,10 +219,10 @@
     <!-- Study Material Section -->
     <div class="section-card">
         <h2>📚 Study Material</h2>
-        <div class="coming-soon">
-            <p>Coming soon</p>
-            <p style="font-size: 0.9rem;">Organize and access your notes and resources.</p>
-        </div>
+        <p style="color: #7f8c8d; margin-bottom: 1rem;">Organize lecture notes, exam papers, and study resources.</p>
+        <a href="{{ url_for('materials.study_material_home', subject_id=subject.id) }}" class="action-btn btn-edit">
+            Open Study Material
+        </a>
     </div>
 
     <!-- Tasks Section -->

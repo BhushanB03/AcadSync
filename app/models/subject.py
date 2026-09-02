@@ -38,6 +38,12 @@ class Subject(db.Model):
         lazy=True,
         cascade='all, delete-orphan'
     )
+    study_materials = db.relationship(
+        'StudyMaterial',
+        backref='subject',
+        lazy=True,
+        cascade='all, delete-orphan'
+    )
 
     def __repr__(self):
         return f'<Subject {self.code} - {self.name}>'

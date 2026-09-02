@@ -1,5 +1,5 @@
 import os
-from flask import Flask
+from flask import Flask, flash, redirect, request, url_for
 from app.config import Config
 from app.extensions import db, migrate, login_manager, csrf
 
@@ -28,12 +28,22 @@ def create_app():
     login_manager.login_view = 'auth.login'
     login_manager.login_message = 'Please log in to access this page.'
 
+    # Ensure uploads directory exists
+    os.makedirs(app.config['UPLOAD_FOLDER'], exist_ok=True)
+
+    @app.errorhandler(413)
+    def handle_request_entity_too_large(error):
+        flash('Uploaded file exceeds the 16 MB limit.', 'error')
+        return redirect(request.referrer or url_for('subjects.index'))
+
     # Register blueprints
     from app.routes.auth import auth_bp
     from app.routes.subjects import subjects_bp
     from app.routes.grades import grades_bp
+    from app.routes.materials import materials_bp
     app.register_blueprint(auth_bp)
     app.register_blueprint(subjects_bp)
     app.register_blueprint(grades_bp)
+    app.register_blueprint(materials_bp)
 
     return app

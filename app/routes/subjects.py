@@ -220,6 +220,9 @@ def delete(subject_id):
         flash(f'Subject "{subject_name}" deleted successfully!', 'success')
     except Exception as e:
         db.session.rollback()
+        print(f"DELETE SUBJECT ERROR: {e}")  # TEMPORARY — remove after debugging
+        import traceback
+        traceback.print_exc()  # TEMPORARY — shows full traceback in terminal
         flash('An error occurred while deleting the subject. Please try again.', 'error')
     
     return redirect(url_for('subjects.index'))

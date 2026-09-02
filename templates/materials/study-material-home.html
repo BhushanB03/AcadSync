@@ -1,0 +1,91 @@
+{% extends "base.html" %}
+
+{% block title %}Study Material - {{ subject.name }}{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="page-header">
+        <div>
+            <h1>Study Material</h1>
+            <p class="subject-info">{{ subject.name }} ({{ subject.code }})</p>
+        </div>
+        <a href="{{ url_for('subjects.detail', subject_id=subject.id) }}" class="btn btn-secondary">Back to Subject</a>
+    </div>
+
+    <div class="material-home-grid">
+        <a href="{{ url_for('materials.category_list', subject_id=subject.id, category='lecture_notes') }}" class="material-card lecture-card">
+            <div class="material-card-icon">📖</div>
+            <div>
+                <h2>Lecture Notes</h2>
+                <p>{{ lecture_count }} material{% if lecture_count != 1 %}s{% endif %}</p>
+            </div>
+        </a>
+
+        <a href="{{ url_for('materials.category_list', subject_id=subject.id, category='exam_papers') }}" class="material-card exam-card">
+            <div class="material-card-icon">🎯</div>
+            <div>
+                <h2>Exam Papers</h2>
+                <p>{{ exam_count }} material{% if exam_count != 1 %}s{% endif %}</p>
+            </div>
+        </a>
+    </div>
+</div>
+
+<style>
+    .material-home-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+        gap: 1.5rem;
+        margin-top: 2rem;
+    }
+
+    .material-card {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        padding: 1.5rem;
+        border-radius: 12px;
+        text-decoration: none;
+        color: #2c3e50;
+        box-shadow: 0 6px 18px rgba(0, 0, 0, 0.08);
+        transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    .material-card:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 10px 24px rgba(0, 0, 0, 0.12);
+    }
+
+    .lecture-card {
+        background: linear-gradient(135deg, #f3f9ff 0%, #e8f4ff 100%);
+        border: 1px solid #bfe1ff;
+    }
+
+    .exam-card {
+        background: linear-gradient(135deg, #fff7e8 0%, #fff0d6 100%);
+        border: 1px solid #f9d79d;
+    }
+
+    .material-card-icon {
+        font-size: 2.5rem;
+        width: 4rem;
+        height: 4rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: rgba(255, 255, 255, 0.7);
+        border-radius: 50%;
+    }
+
+    .material-card h2 {
+        margin: 0 0 0.25rem 0;
+        font-size: 1.6rem;
+    }
+
+    .material-card p {
+        margin: 0;
+        color: #555;
+        font-size: 0.95rem;
+    }
+</style>
+{% endblock %}
