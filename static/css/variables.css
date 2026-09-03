@@ -1,0 +1,227 @@
+/**
+ * AcadSync - CSS Custom Properties & Design System Tokens
+ * Phase 10: UI/UX Overhaul
+ *
+ * Palette Refinement:
+ * - Replaced harsh bright white surfaces with rich, less flashy dark slate, blue, and purple undertones.
+ * - Deep, refined midnight background (#0A0A0E) with subtle indigo/purple surface cards (#13141E / #161726).
+ * - Elegant, non-flashy accent hierarchy: Soft Indigo (#4F46E5), Violet/Purple (#7C3AED), Slate Blue (#3B82F6).
+ * - High-contrast yet soft text typography (no eye-strain).
+ */
+
+:root {
+    /* =========================================================================
+       Dark Mode Palette (Default - Sophisticated Indigo/Purple Undertones)
+       ========================================================================= */
+    /* Backgrounds */
+    --bg-primary: #0A0A0E;              /* Deep midnight page background */
+    --bg-surface: #13141E;              /* Rich dark slate with subtle purple/blue tone */
+    --bg-surface-card: #151726;         /* Elevated card surface */
+    --bg-surface-hover: #1B1D2E;        /* Hover state for cards and list items */
+    --bg-surface-active: #23263B;       /* Active / pressed state */
+    --bg-input: #0E0F17;                /* Inputs & chat textarea background */
+
+    /* Borders */
+    --border-color: #24273D;            /* Subtle indigo/slate border */
+    --border-color-subtle: #1C1E2F;     /* Dividers and low-emphasis borders */
+    --border-color-hover: #383D5C;      /* Hover border outline */
+
+    /* Typography / Text */
+    --text-primary: #F0F1F7;            /* Soft high-contrast off-white */
+    --text-muted: #8E92AA;              /* Refined lavender-slate grey */
+    --text-dim: #555A75;                /* Tertiary text & placeholder */
+    --text-inverse: #0A0A0E;
+
+    /* Accents: Less flashy, refined Blue, Indigo & Purple */
+    --accent: #4F46E5;                  /* Primary refined Indigo */
+    --accent-hover: #4338CA;
+    --accent-subtle: rgba(79, 70, 229, 0.15);
+    --accent-border: rgba(79, 70, 229, 0.35);
+    --accent-text: #818CF8;
+
+    /* Purple / Violet Palette (Secondary Accents) */
+    --accent-purple: #7C3AED;
+    --accent-purple-hover: #6D28D9;
+    --accent-purple-subtle: rgba(124, 58, 237, 0.14);
+    --accent-purple-border: rgba(124, 58, 237, 0.32);
+    --accent-purple-text: #A78BFA;
+
+    /* Classic Slate Blue */
+    --accent-blue: #3B82F6;
+    --accent-blue-subtle: rgba(59, 130, 246, 0.14);
+    --accent-blue-border: rgba(59, 130, 246, 0.32);
+
+    /* Semantic Status Colors (Soft & Balanced, not neon) */
+    --success: #10B981;
+    --success-subtle: rgba(16, 185, 129, 0.14);
+    --success-border: rgba(16, 185, 129, 0.30);
+    --success-banner-bg: #092617;
+    --success-banner-border: #14532D;
+    --success-banner-text: #34D399;
+
+    --warning: #F59E0B;                 /* Warm muted amber */
+    --warning-subtle: rgba(245, 158, 11, 0.14);
+    --warning-border: rgba(245, 158, 11, 0.30);
+
+    --danger: #EF4444;                  /* Crimson */
+    --danger-subtle: rgba(239, 68, 68, 0.14);
+    --danger-border: rgba(239, 68, 68, 0.32);
+    --danger-banner-bg: #290C10;
+    --danger-banner-border: #7F1D1D;
+    --danger-banner-text: #F87171;
+
+    /* University & Academic Badges */
+    --badge-iitm: #3B82F6;
+    --badge-vit: #DC2626;
+    --badge-neutral: #2A2D42;
+    --badge-core: #212338;
+    --badge-active: #059669;
+    --badge-pending: #3B3F5C;
+    --badge-overdue: #991B1B;
+    --badge-high: #DC2626;
+    --badge-medium: #D97706;
+    --badge-low: #059669;
+
+    /* Non-flashy Action Buttons (for cards & lists) */
+    --btn-view-bg: rgba(79, 70, 229, 0.18);
+    --btn-view-text: #A5B4FC;
+    --btn-view-border: rgba(79, 70, 229, 0.35);
+    --btn-view-hover: #4F46E5;
+
+    --btn-edit-bg: rgba(124, 58, 237, 0.14);
+    --btn-edit-text: #C4B5FD;
+    --btn-edit-border: rgba(124, 58, 237, 0.32);
+    --btn-edit-hover: #7C3AED;
+
+    --btn-delete-bg: rgba(239, 68, 68, 0.12);
+    --btn-delete-text: #FCA5A5;
+    --btn-delete-border: rgba(239, 68, 68, 0.30);
+    --btn-delete-hover: #DC2626;
+
+    /* =========================================================================
+       Scale Variables (Independent of theme)
+       ========================================================================= */
+    /* Spacing Scale */
+    --space-xs: 0.25rem;   /* 4px */
+    --space-sm: 0.5rem;    /* 8px */
+    --space-md: 1rem;      /* 16px */
+    --space-lg: 1.5rem;    /* 24px */
+    --space-xl: 2rem;      /* 32px */
+    --space-2xl: 2.5rem;   /* 40px */
+
+    /* Border Radius Scale */
+    --radius-xs: 4px;
+    --radius-sm: 6px;
+    --radius-md: 10px;
+    --radius-lg: 14px;
+    --radius-full: 9999px;
+
+    /* Layout Sizing */
+    --sidebar-width: 260px;
+    --header-height: 60px;
+
+    /* Typography */
+    --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+    
+    /* Subtle shadows */
+    --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.3);
+    --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.35);
+    --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.4);
+
+    /* Transitions */
+    --transition-fast: 150ms cubic-bezier(0.4, 0, 0.2, 1);
+    --transition-base: 200ms cubic-bezier(0.4, 0, 0.2, 1);
+    --transition-smooth: 300ms cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* =============================================================================
+   Light Mode Overrides
+   ============================================================================= */
+[data-theme="light"] {
+    --bg-primary: #FAFAFC;
+    --bg-surface: #FFFFFF;
+    --bg-surface-card: #FFFFFF;
+    --bg-surface-hover: #F4F4F8;
+    --bg-surface-active: #EAEAF0;
+    --bg-input: #FFFFFF;
+
+    /* Borders */
+    --border-color: #E2E4EB;
+    --border-color-subtle: #EDEFF5;
+    --border-color-hover: #CBD0DE;
+
+    /* Typography / Text */
+    --text-primary: #12141F;
+    --text-muted: #656A82;
+    --text-dim: #9499B0;
+    --text-inverse: #FFFFFF;
+
+    /* Brand Accent */
+    --accent: #4338CA;
+    --accent-hover: #3730A3;
+    --accent-subtle: rgba(67, 56, 202, 0.08);
+    --accent-border: rgba(67, 56, 202, 0.25);
+    --accent-text: #4338CA;
+
+    --accent-purple: #6D28D9;
+    --accent-purple-hover: #5B21B6;
+    --accent-purple-subtle: rgba(109, 40, 217, 0.08);
+    --accent-purple-border: rgba(109, 40, 217, 0.22);
+    --accent-purple-text: #6D28D9;
+
+    --accent-blue: #2563EB;
+    --accent-blue-subtle: rgba(37, 99, 235, 0.08);
+    --accent-blue-border: rgba(37, 99, 235, 0.22);
+
+    /* Semantic Status Colors */
+    --success: #059669;
+    --success-subtle: rgba(5, 150, 105, 0.10);
+    --success-border: rgba(5, 150, 105, 0.25);
+    --success-banner-bg: #ECFDF5;
+    --success-banner-border: #A7F3D0;
+    --success-banner-text: #065F46;
+
+    --warning: #D97706;
+    --warning-subtle: rgba(217, 119, 6, 0.10);
+    --warning-border: rgba(217, 119, 6, 0.25);
+
+    --danger: #DC2626;
+    --danger-subtle: rgba(220, 38, 38, 0.10);
+    --danger-border: rgba(220, 38, 38, 0.25);
+    --danger-banner-bg: #FEF2F2;
+    --danger-banner-border: #FECACA;
+    --danger-banner-text: #991B1B;
+
+    /* University & Academic Badges */
+    --badge-iitm: #2563EB;
+    --badge-vit: #DC2626;
+    --badge-neutral: #656A82;
+    --badge-core: #E2E4EB;
+    --badge-active: #059669;
+    --badge-pending: #656A82;
+    --badge-overdue: #DC2626;
+    --badge-high: #DC2626;
+    --badge-medium: #D97706;
+    --badge-low: #059669;
+
+    /* Action Buttons in Light Mode */
+    --btn-view-bg: rgba(67, 56, 202, 0.08);
+    --btn-view-text: #4338CA;
+    --btn-view-border: rgba(67, 56, 202, 0.25);
+    --btn-view-hover: #4338CA;
+
+    --btn-edit-bg: rgba(109, 40, 217, 0.08);
+    --btn-edit-text: #6D28D9;
+    --btn-edit-border: rgba(109, 40, 217, 0.25);
+    --btn-edit-hover: #6D28D9;
+
+    --btn-delete-bg: rgba(220, 38, 38, 0.08);
+    --btn-delete-text: #DC2626;
+    --btn-delete-border: rgba(220, 38, 38, 0.25);
+    --btn-delete-hover: #DC2626;
+
+    /* Shadows */
+    --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+    --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.08);
+    --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+}

@@ -151,22 +151,25 @@
 }
 
 .calculator-card, .result-card, .reference-card {
-    background-color: white;
-    border-radius: 8px;
-    padding: 1.5rem;
+    background-color: var(--bg-surface-card);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-md);
+    padding: 1.75rem;
     margin-bottom: 1.5rem;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    box-shadow: var(--shadow-sm);
 }
 
 .calculator-card h3, .result-card h3, .reference-card h3 {
     margin: 0 0 1rem 0;
-    color: #2c3e50;
+    color: var(--text-primary);
+    font-size: 1.25rem;
+    font-weight: 700;
 }
 
 .target-form {
     display: flex;
     flex-direction: column;
-    gap: 1rem;
+    gap: 1.25rem;
 }
 
 .form-group {
@@ -175,89 +178,94 @@
 }
 
 .form-group label {
-    margin-bottom: 0.5rem;
+    margin-bottom: 0.4rem;
     font-weight: 600;
-    font-size: 0.9rem;
-    color: #2c3e50;
+    font-size: 0.88rem;
+    color: var(--text-primary);
 }
 
 .form-group select {
-    padding: 0.75rem;
-    border: 1px solid #ddd;
-    border-radius: 4px;
-    font-size: 1rem;
+    padding: 0.75rem 0.9rem;
+    background-color: var(--bg-input);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-sm);
+    color: var(--text-primary);
+    font-size: 0.95rem;
     font-family: inherit;
+    transition: border-color var(--transition-fast);
 }
 
 .form-group select:focus {
     outline: none;
-    border-color: #3498db;
-    box-shadow: 0 0 0 2px rgba(52, 152, 219, 0.1);
+    border-color: var(--accent);
+    box-shadow: 0 0 0 3px var(--accent-subtle);
 }
 
 .result-card {
-    border-left: 4px solid #ddd;
+    border-left: 4px solid var(--border-color);
 }
 
 .result-card.achievable {
-    border-left-color: #27ae60;
-    background-color: #ecfdf5;
+    border-left-color: var(--success);
+    background-color: rgba(16, 185, 129, 0.08);
 }
 
 .result-card.not-achievable {
-    border-left-color: #e74c3c;
-    background-color: #fff5f5;
+    border-left-color: var(--danger);
+    background-color: rgba(220, 38, 38, 0.08);
 }
 
 .result-card h3 {
-    color: #2c3e50;
+    color: var(--text-primary);
     margin-bottom: 1rem;
 }
 
 .result-card.achievable h3 {
-    color: #27ae60;
+    color: var(--success);
 }
 
 .result-card.not-achievable h3 {
-    color: #e74c3c;
+    color: var(--danger);
 }
 
 .result-box {
-    background-color: white;
-    border-radius: 4px;
-    padding: 1rem;
-    border: 1px solid #ddd;
+    background-color: var(--bg-surface);
+    border-radius: var(--radius-sm);
+    padding: 1.25rem;
+    border: 1px solid var(--border-color);
 }
 
 .result-label {
     font-weight: 600;
-    color: #2c3e50;
-    margin: 0 0 0.75rem 0;
+    color: var(--text-primary);
+    margin: 0 0 0.5rem 0;
+    font-size: 0.9rem;
 }
 
 .result-value {
     font-size: 2.5rem;
     font-weight: bold;
-    color: #27ae60;
-    margin: 0 0 1rem 0;
+    color: var(--success);
+    margin: 0 0 0.75rem 0;
 }
 
 .result-help {
-    color: #666;
-    font-size: 0.9rem;
-    margin: 1rem 0 0 0;
+    color: var(--text-muted);
+    font-size: 0.88rem;
+    margin: 0.75rem 0 0 0;
 }
 
 .missing-components, .current-marks {
     margin-top: 1.5rem;
     padding-top: 1.5rem;
-    border-top: 1px solid #ddd;
+    border-top: 1px solid var(--border-color-subtle);
 }
 
 .missing-components h4, .current-marks h4 {
     margin: 0 0 0.75rem 0;
     font-size: 1rem;
-    color: #2c3e50;
+    font-weight: 700;
+    color: var(--text-primary);
 }
 
 .missing-components ul, .current-marks ul {
@@ -268,9 +276,9 @@
 
 .missing-components li, .current-marks li {
     padding: 0.75rem 0;
-    border-bottom: 1px solid #eee;
-    color: #555;
-    font-size: 0.95rem;
+    border-bottom: 1px solid var(--border-color-subtle);
+    color: var(--text-muted);
+    font-size: 0.92rem;
 }
 
 .missing-components li:last-child, .current-marks li:last-child {
@@ -278,23 +286,23 @@
 }
 
 .component-max {
-    color: #999;
+    color: var(--text-dim);
     font-size: 0.85rem;
 }
 
 .percentage {
-    background-color: #e8f4f8;
-    color: #3498db;
+    background-color: rgba(59, 130, 246, 0.15);
+    color: #93C5FD;
     padding: 0.2rem 0.5rem;
-    border-radius: 3px;
+    border-radius: var(--radius-xs);
     font-weight: 600;
-    font-size: 0.85rem;
+    font-size: 0.82rem;
     margin-left: 0.5rem;
 }
 
 .reference-card {
-    background-color: #f9f9f9;
-    border-left: 4px solid #3498db;
+    background-color: var(--bg-surface-card);
+    border-left: 4px solid var(--accent);
 }
 
 .boundaries-table {
@@ -307,58 +315,63 @@
     justify-content: space-between;
     align-items: center;
     padding: 0.75rem 1rem;
-    background-color: white;
-    border-radius: 4px;
-    border: 1px solid #ddd;
+    background-color: var(--bg-surface);
+    border-radius: var(--radius-sm);
+    border: 1px solid var(--border-color);
 }
 
 .grade-label {
-    background-color: #2c3e50;
+    background-color: var(--accent);
     color: white;
-    width: 3rem;
-    height: 3rem;
+    width: 2.5rem;
+    height: 2.5rem;
     display: flex;
     align-items: center;
     justify-content: center;
-    border-radius: 4px;
-    font-weight: bold;
+    border-radius: var(--radius-xs);
+    font-weight: 700;
     font-size: 1.1rem;
 }
 
 .boundary-range {
-    color: #666;
+    color: var(--text-muted);
     font-weight: 600;
 }
 
 .btn {
-    display: inline-block;
-    padding: 0.75rem 1.5rem;
-    border-radius: 4px;
-    border: none;
-    font-size: 1rem;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0.7rem 1.4rem;
+    border-radius: var(--radius-sm);
+    border: 1px solid transparent;
+    font-size: 0.92rem;
     cursor: pointer;
     text-decoration: none;
     font-weight: 600;
-    transition: all 0.3s ease;
+    transition: all var(--transition-fast);
     text-align: center;
 }
 
 .btn-primary {
-    background-color: #3498db;
+    background-color: var(--accent);
     color: white;
 }
 
 .btn-primary:hover {
-    background-color: #2980b9;
+    background-color: var(--accent-hover);
+    transform: translateY(-1px);
 }
 
 .btn-secondary {
-    background-color: #95a5a6;
-    color: white;
+    background-color: var(--bg-surface-hover);
+    border-color: var(--border-color);
+    color: var(--text-primary);
 }
 
 .btn-secondary:hover {
-    background-color: #7f8c8d;
+    background-color: var(--bg-surface-active);
+    border-color: var(--border-color-hover);
 }
 
 @media (max-width: 600px) {
@@ -381,8 +394,8 @@
     }
 
     .grade-label {
-        width: 2.5rem;
-        height: 2.5rem;
+        width: 2.2rem;
+        height: 2.2rem;
         font-size: 0.95rem;
     }
 }

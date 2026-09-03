@@ -37,29 +37,43 @@
     .form-card {
         max-width: 700px;
         margin: 2rem auto 0;
-        background: white;
-        border: 1px solid #e3e7eb;
-        border-radius: 12px;
-        padding: 1.5rem;
+        background: var(--bg-surface-card);
+        border: 1px solid var(--border-color);
+        border-radius: var(--radius-md);
+        padding: 1.75rem;
+        box-shadow: var(--shadow-sm);
     }
 
     .form-group {
-        margin-bottom: 1rem;
+        margin-bottom: 1.25rem;
     }
 
     .form-group label {
         display: block;
-        margin-bottom: 0.5rem;
+        margin-bottom: 0.4rem;
         font-weight: 600;
+        color: var(--text-primary);
+        font-size: 0.88rem;
     }
 
     .form-group input,
     .form-group textarea {
         width: 100%;
-        padding: 0.75rem;
-        border: 1px solid #d7dfe5;
-        border-radius: 6px;
+        padding: 0.75rem 0.9rem;
+        background: var(--bg-input);
+        border: 1px solid var(--border-color);
+        border-radius: var(--radius-sm);
+        color: var(--text-primary);
+        font-size: 0.92rem;
         font-family: inherit;
+        transition: border-color var(--transition-fast);
+    }
+
+    .form-group input:focus,
+    .form-group textarea:focus {
+        outline: none;
+        border-color: var(--accent);
+        box-shadow: 0 0 0 3px var(--accent-subtle);
     }
 
     textarea {

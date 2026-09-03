@@ -9,19 +9,23 @@
     }
 
     .page-header h1 {
-        color: #2c3e50;
-        margin-bottom: 0.5rem;
+        color: var(--text-primary);
+        font-size: 1.85rem;
+        font-weight: 700;
+        margin-bottom: 0.35rem;
     }
 
     .page-header p {
-        color: #7f8c8d;
+        color: var(--text-muted);
+        font-size: 0.92rem;
     }
 
     .form-card {
-        background: white;
-        border-radius: 10px;
+        background: var(--bg-surface-card);
+        border: 1px solid var(--border-color);
+        border-radius: var(--radius-md);
         padding: 2rem;
-        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+        box-shadow: var(--shadow-sm);
         max-width: 800px;
     }
 
@@ -34,7 +38,7 @@
     .form-group {
         display: flex;
         flex-direction: column;
-        gap: 0.5rem;
+        gap: 0.4rem;
     }
 
     .form-group.full-width {
@@ -43,18 +47,30 @@
 
     .form-group label {
         font-weight: 600;
-        color: #2c3e50;
+        color: var(--text-primary);
+        font-size: 0.88rem;
     }
 
     .form-group input,
     .form-group select,
     .form-group textarea {
         width: 100%;
-        padding: 0.75rem 0.8rem;
-        border: 1px solid #dfe6e9;
-        border-radius: 8px;
-        font-size: 1rem;
+        padding: 0.75rem 0.9rem;
+        background: var(--bg-input);
+        border: 1px solid var(--border-color);
+        border-radius: var(--radius-sm);
+        color: var(--text-primary);
+        font-size: 0.95rem;
         font-family: inherit;
+        transition: border-color var(--transition-fast), box-shadow var(--transition-fast);
+    }
+
+    .form-group input:focus,
+    .form-group select:focus,
+    .form-group textarea:focus {
+        outline: none;
+        border-color: var(--accent);
+        box-shadow: 0 0 0 3px var(--accent-subtle);
     }
 
     .form-group textarea {
@@ -70,24 +86,41 @@
     }
 
     .btn {
-        display: inline-block;
-        padding: 0.8rem 1.3rem;
-        border: none;
-        border-radius: 8px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        padding: 0.7rem 1.4rem;
+        border-radius: var(--radius-sm);
         font-weight: 600;
+        font-size: 0.9rem;
         cursor: pointer;
         text-decoration: none;
         text-align: center;
+        border: 1px solid transparent;
+        transition: all var(--transition-fast);
     }
 
     .btn-primary {
-        background: #2ecc71;
+        background: var(--accent);
         color: white;
+        border-color: var(--accent);
+    }
+
+    .btn-primary:hover {
+        background: var(--accent-hover);
+        border-color: var(--accent-hover);
+        transform: translateY(-1px);
     }
 
     .btn-secondary {
-        background: #ecf0f1;
-        color: #2c3e50;
+        background: var(--bg-surface-hover);
+        color: var(--text-primary);
+        border: 1px solid var(--border-color);
+    }
+
+    .btn-secondary:hover {
+        background: var(--bg-surface-active);
+        border-color: var(--border-color-hover);
     }
 </style>
 {% endblock %}

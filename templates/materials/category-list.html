@@ -79,11 +79,16 @@
         justify-content: space-between;
         align-items: center;
         gap: 1rem;
-        background: white;
-        border: 1px solid #e3e7eb;
-        border-radius: 12px;
+        background: var(--bg-surface-card);
+        border: 1px solid var(--border-color);
+        border-radius: var(--radius-md);
         padding: 1.25rem;
-        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+        box-shadow: var(--shadow-sm);
+        transition: border-color var(--transition-fast);
+    }
+
+    .material-card:hover {
+        border-color: var(--border-color-hover);
     }
 
     .material-main {
@@ -101,30 +106,37 @@
 
     .material-header h3 {
         margin: 0;
-        font-size: 1.2rem;
+        font-size: 1.15rem;
+        font-weight: 700;
+        color: var(--text-primary);
     }
 
     .type-badge {
         display: inline-block;
-        padding: 0.35rem 0.75rem;
-        border-radius: 999px;
-        font-size: 0.8rem;
+        padding: 0.3rem 0.75rem;
+        border-radius: var(--radius-xs);
+        font-size: 0.78rem;
         font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.04em;
     }
 
     .type-file {
-        background: #eaf4ff;
-        color: #1d5fbf;
+        background: rgba(59, 130, 246, 0.15);
+        color: #93C5FD;
+        border: 1px solid rgba(59, 130, 246, 0.35);
     }
 
     .type-link {
-        background: #eafaf1;
-        color: #138a36;
+        background: rgba(16, 185, 129, 0.15);
+        color: #6EE7B7;
+        border: 1px solid rgba(16, 185, 129, 0.35);
     }
 
     .type-note {
-        background: #fff4dc;
-        color: #b7791f;
+        background: rgba(124, 58, 237, 0.15);
+        color: #C4B5FD;
+        border: 1px solid rgba(124, 58, 237, 0.35);
     }
 
     .material-actions {
@@ -132,24 +144,25 @@
     }
 
     .note-details {
-        margin-top: 0.5rem;
-        border: 1px solid #e6e6e6;
-        border-radius: 8px;
-        background: #fafafa;
+        margin-top: 0.75rem;
+        border: 1px solid var(--border-color);
+        border-radius: var(--radius-sm);
+        background: var(--bg-surface);
     }
 
     .note-details summary {
         cursor: pointer;
         padding: 0.75rem 1rem;
         font-weight: 600;
-        color: #2c3e50;
+        color: var(--text-primary);
     }
 
     .note-content {
         padding: 0 1rem 1rem;
         white-space: pre-wrap;
-        color: #444;
+        color: var(--text-muted);
         line-height: 1.6;
+        font-size: 0.92rem;
     }
 
     .delete-form {
@@ -157,22 +170,29 @@
     }
 
     .btn-danger {
-        background-color: #e74c3c;
-        color: white;
+        background-color: var(--btn-delete-bg);
+        color: var(--btn-delete-text);
+        border: 1px solid var(--btn-delete-border);
     }
 
     .btn-danger:hover {
-        background-color: #c0392b;
+        background-color: var(--danger);
+        color: white;
     }
 
     .empty-state {
         margin-top: 2rem;
-        padding: 2rem;
-        background: white;
-        border: 1px dashed #d0d7de;
-        border-radius: 8px;
+        padding: 2.5rem 1.5rem;
+        background: var(--bg-surface-card);
+        border: 1px dashed var(--border-color);
+        border-radius: var(--radius-md);
         text-align: center;
-        color: #666;
+        color: var(--text-muted);
+    }
+
+    .empty-state h3 {
+        color: var(--text-primary);
+        margin-bottom: 0.5rem;
     }
 
     @media (max-width: 700px) {
@@ -184,6 +204,7 @@
         .delete-form {
             width: 100%;
             margin-left: 0;
+            margin-top: 0.75rem;
         }
 
         .delete-form .btn {

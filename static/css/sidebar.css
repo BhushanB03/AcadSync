@@ -1,0 +1,368 @@
+/**
+ * AcadSync - Sidebar Styles
+ * Phase 10: UI/UX Overhaul
+ *
+ * Implements the fixed left sidebar navigation matching Figma mockups:
+ * - Brand logo badge & title
+ * - Navigation links with active states
+ * - Light/Dark theme toggle button
+ * - User info & profile badge with avatar circle
+ */
+
+/* =============================================================================
+   1. Sidebar Container
+   ============================================================================= */
+.sidebar {
+    width: var(--sidebar-width);
+    height: 100vh;
+    position: fixed;
+    top: 0;
+    left: 0;
+    background-color: var(--bg-primary);
+    border-right: 1px solid var(--border-color);
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    z-index: 100;
+    box-sizing: border-box;
+    transition: transform var(--transition-smooth), background-color var(--transition-base), border-color var(--transition-base);
+}
+
+.sidebar-scrollable {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    padding: 1.5rem 1rem 1rem;
+    overflow-y: auto;
+    scrollbar-width: thin;
+    scrollbar-color: var(--border-color) transparent;
+}
+
+.sidebar-scrollable::-webkit-scrollbar {
+    width: 4px;
+}
+
+.sidebar-scrollable::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.sidebar-scrollable::-webkit-scrollbar-thumb {
+    background: var(--border-color);
+    border-radius: var(--radius-full);
+}
+
+/* =============================================================================
+   2. Brand Header (Logo + Title + Subtitle)
+   ============================================================================= */
+.sidebar-brand {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    text-decoration: none;
+    padding: 0.25rem 0.5rem;
+    margin-bottom: 2rem;
+    user-select: none;
+}
+
+.brand-icon-box {
+    width: 34px;
+    height: 34px;
+    background-color: var(--accent);
+    color: #FFFFFF;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 800;
+    font-size: 1.1rem;
+    line-height: 1;
+    flex-shrink: 0;
+    box-shadow: 0 2px 8px rgba(59, 130, 246, 0.25);
+    transition: transform var(--transition-fast);
+}
+
+.sidebar-brand:hover .brand-icon-box {
+    transform: scale(1.04);
+}
+
+.brand-info {
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+}
+
+.brand-title {
+    font-size: 1.15rem;
+    font-weight: 700;
+    color: var(--text-primary);
+    line-height: 1.2;
+    letter-spacing: -0.01em;
+}
+
+.brand-subtitle {
+    font-size: 0.75rem;
+    color: var(--text-muted);
+    font-weight: 500;
+    margin-top: 1px;
+}
+
+/* =============================================================================
+   3. Navigation Items
+   ============================================================================= */
+.sidebar-nav {
+    display: flex;
+    flex-direction: column;
+    gap: 0.35rem;
+}
+
+.sidebar-nav-item {
+    display: flex;
+    align-items: center;
+    gap: 0.85rem;
+    padding: 0.7rem 0.95rem;
+    border-radius: 8px;
+    font-size: 0.9rem;
+    font-weight: 500;
+    color: var(--text-muted);
+    text-decoration: none;
+    border: 1px solid transparent;
+    transition: all var(--transition-fast);
+    position: relative;
+    user-select: none;
+}
+
+.sidebar-nav-icon {
+    width: 18px;
+    height: 18px;
+    flex-shrink: 0;
+    stroke: currentColor;
+    stroke-width: 2;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    fill: none;
+    transition: stroke var(--transition-fast), transform var(--transition-fast);
+}
+
+/* Inactive Nav Hover State */
+.sidebar-nav-item:hover {
+    color: var(--text-primary);
+    background-color: var(--bg-surface-hover);
+}
+
+.sidebar-nav-item:hover .sidebar-nav-icon {
+    transform: scale(1.05);
+}
+
+/* Active Nav Item Styling (as seen in Figma) */
+.sidebar-nav-item.active {
+    background-color: var(--accent-subtle);
+    border-color: var(--accent-border);
+    color: var(--accent);
+    font-weight: 600;
+}
+
+.sidebar-nav-item.active .sidebar-nav-icon {
+    stroke: var(--accent);
+}
+
+/* Quick link distinction (like Add Task) */
+.sidebar-nav-item.sidebar-quick-action {
+    color: var(--text-muted);
+}
+
+.sidebar-nav-item.sidebar-quick-action:hover {
+    color: var(--text-primary);
+}
+
+/* Nav Divider */
+.sidebar-divider {
+    height: 1px;
+    background-color: var(--border-color-subtle);
+    margin: 0.75rem 0.5rem;
+}
+
+/* =============================================================================
+   4. Sidebar Footer (Theme Toggle + User Profile)
+   ============================================================================= */
+.sidebar-footer {
+    padding: 1rem 1rem 1.25rem;
+    border-top: 1px solid var(--border-color);
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+    background-color: var(--bg-primary);
+}
+
+/* Theme Toggle Button */
+.theme-toggle-btn {
+    display: flex;
+    align-items: center;
+    gap: 0.65rem;
+    width: 100%;
+    padding: 0.6rem 0.85rem;
+    background-color: var(--bg-surface);
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    color: var(--text-muted);
+    font-family: var(--font-sans);
+    font-size: 0.85rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all var(--transition-fast);
+    outline: none;
+    user-select: none;
+}
+
+.theme-toggle-btn:hover {
+    background-color: var(--bg-surface-hover);
+    color: var(--text-primary);
+    border-color: var(--border-color-hover);
+}
+
+.theme-toggle-icon {
+    width: 16px;
+    height: 16px;
+    stroke: currentColor;
+    stroke-width: 2;
+    fill: none;
+    flex-shrink: 0;
+}
+
+.theme-toggle-text {
+    flex: 1;
+    text-align: left;
+}
+
+/* User Profile Row */
+.user-profile-card {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.4rem 0.25rem;
+    border-radius: 8px;
+    transition: background-color var(--transition-fast);
+}
+
+.user-avatar {
+    width: 36px;
+    height: 36px;
+    border-radius: var(--radius-full);
+    background-color: var(--accent);
+    color: #FFFFFF;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+    font-size: 0.95rem;
+    flex-shrink: 0;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+}
+
+.user-info {
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+    flex: 1;
+}
+
+.user-name {
+    font-size: 0.88rem;
+    font-weight: 600;
+    color: var(--text-primary);
+    line-height: 1.25;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.user-subtext {
+    font-size: 0.72rem;
+    color: var(--text-muted);
+    line-height: 1.2;
+    margin-top: 2px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.logout-link {
+    color: var(--text-dim);
+    padding: 0.45rem;
+    border-radius: var(--radius-xs);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-decoration: none;
+    transition: all var(--transition-fast);
+    flex-shrink: 0;
+}
+
+.logout-link:hover {
+    color: var(--danger);
+    background-color: var(--danger-subtle);
+}
+
+.logout-icon {
+    width: 16px;
+    height: 16px;
+    stroke: currentColor;
+    stroke-width: 2;
+    fill: none;
+}
+
+/* =============================================================================
+   5. Mobile Sidebar Header & Toggle
+   ============================================================================= */
+.mobile-topbar {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: var(--header-height);
+    background-color: var(--bg-primary);
+    border-bottom: 1px solid var(--border-color);
+    padding: 0 1rem;
+    align-items: center;
+    justify-content: space-between;
+    z-index: 99;
+}
+
+.mobile-menu-btn {
+    background: transparent;
+    border: none;
+    color: var(--text-primary);
+    cursor: pointer;
+    padding: 0.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.mobile-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.6);
+    backdrop-filter: blur(2px);
+    z-index: 95;
+}
+
+@media (max-width: 768px) {
+    .mobile-topbar {
+        display: flex;
+    }
+
+    .sidebar {
+        transform: translateX(-100%);
+    }
+
+    .sidebar.open {
+        transform: translateX(0);
+        box-shadow: var(--shadow-lg);
+    }
+
+    .mobile-overlay.open {
+        display: block;
+    }
+}

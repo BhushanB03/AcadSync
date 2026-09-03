@@ -34,7 +34,7 @@
 <style>
     .material-home-grid {
         display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+        grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
         gap: 1.5rem;
         margin-top: 2rem;
     }
@@ -42,50 +42,67 @@
     .material-card {
         display: flex;
         align-items: center;
-        gap: 1rem;
-        padding: 1.5rem;
-        border-radius: 12px;
+        gap: 1.25rem;
+        padding: 1.75rem;
+        border-radius: var(--radius-md);
         text-decoration: none;
-        color: #2c3e50;
-        box-shadow: 0 6px 18px rgba(0, 0, 0, 0.08);
-        transition: transform 0.2s ease, box-shadow 0.2s ease;
+        color: var(--text-primary);
+        box-shadow: var(--shadow-sm);
+        transition: all var(--transition-fast);
+        border: 1px solid var(--border-color);
+        background: var(--bg-surface-card);
     }
 
     .material-card:hover {
         transform: translateY(-2px);
-        box-shadow: 0 10px 24px rgba(0, 0, 0, 0.12);
+        box-shadow: var(--shadow-md);
+        border-color: var(--border-color-hover);
     }
 
     .lecture-card {
-        background: linear-gradient(135deg, #f3f9ff 0%, #e8f4ff 100%);
-        border: 1px solid #bfe1ff;
+        background: linear-gradient(135deg, rgba(79, 70, 229, 0.15) 0%, rgba(59, 130, 246, 0.08) 100%);
+        border: 1px solid rgba(99, 102, 241, 0.35);
+    }
+
+    .lecture-card:hover {
+        border-color: rgba(99, 102, 241, 0.6);
+        background: linear-gradient(135deg, rgba(79, 70, 229, 0.22) 0%, rgba(59, 130, 246, 0.12) 100%);
     }
 
     .exam-card {
-        background: linear-gradient(135deg, #fff7e8 0%, #fff0d6 100%);
-        border: 1px solid #f9d79d;
+        background: linear-gradient(135deg, rgba(124, 58, 237, 0.15) 0%, rgba(168, 85, 247, 0.08) 100%);
+        border: 1px solid rgba(168, 85, 247, 0.35);
+    }
+
+    .exam-card:hover {
+        border-color: rgba(168, 85, 247, 0.6);
+        background: linear-gradient(135deg, rgba(124, 58, 237, 0.22) 0%, rgba(168, 85, 247, 0.12) 100%);
     }
 
     .material-card-icon {
-        font-size: 2.5rem;
+        font-size: 2.2rem;
         width: 4rem;
         height: 4rem;
         display: flex;
         align-items: center;
         justify-content: center;
-        background: rgba(255, 255, 255, 0.7);
-        border-radius: 50%;
+        background: var(--bg-surface);
+        border: 1px solid var(--border-color);
+        border-radius: var(--radius-md);
+        flex-shrink: 0;
     }
 
     .material-card h2 {
         margin: 0 0 0.25rem 0;
-        font-size: 1.6rem;
+        font-size: 1.4rem;
+        font-weight: 700;
+        color: var(--text-primary);
     }
 
     .material-card p {
         margin: 0;
-        color: #555;
-        font-size: 0.95rem;
+        color: var(--text-muted);
+        font-size: 0.9rem;
     }
 </style>
 {% endblock %}
