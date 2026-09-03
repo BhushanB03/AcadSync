@@ -44,5 +44,8 @@ class WeeklyProgress(db.Model):
         db.UniqueConstraint('subject_id', 'week_number', name='uq_subject_week_number'),
     )
 
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
+
     def __repr__(self):
         return f'<WeeklyProgress Subject={self.subject_id} Week={self.week_number} Status={self.status}>'

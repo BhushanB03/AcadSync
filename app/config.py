@@ -18,3 +18,4 @@ class Config:
     MAX_CONTENT_LENGTH = 16 * 1024 * 1024
     ALLOWED_UPLOAD_EXTENSIONS = {'pdf', 'ppt', 'pptx', 'doc', 'docx', 'png', 'jpg', 'jpeg'}
     UPLOAD_FOLDER = os.path.join(project_root, 'uploads')
+    GEMINI_API_KEY = os.environ.get('GEMINI_API_KEY')

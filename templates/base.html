@@ -96,6 +96,7 @@
                     <li><a href="{{ url_for('auth.dashboard') }}">Dashboard</a></li>
                     <li><a href="{{ url_for('subjects.index') }}">My Subjects</a></li>
                     <li><a href="{{ url_for('tasks.index') }}">My Tasks</a></li>
+                    <li><a href="{{ url_for('ai.chat') }}">AI Assistant</a></li>
                     <li><a href="{{ url_for('auth.logout') }}">Logout ({{ current_user.name }})</a></li>
                 {% else %}
                     <li><a href="{{ url_for('auth.login') }}">Login</a></li>

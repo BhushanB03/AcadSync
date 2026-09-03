@@ -50,6 +50,9 @@ class GradeTemplate(db.Model):
         cascade='all, delete-orphan'
     )
     
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
+
     def belongs_to_user(self, user_id):
         """Check if template belongs to the given user."""
         return self.user_id == user_id

@@ -61,6 +61,9 @@ class Subject(db.Model):
         order_by='WeeklyProgress.week_number.asc()'
     )
 
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
+
     def __repr__(self):
         return f'<Subject {self.code} - {self.name}>'
 

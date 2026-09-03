@@ -39,5 +39,8 @@ class Task(db.Model):
         nullable=False
     )
 
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
+
     def __repr__(self):
         return f'<Task {self.id}: {self.title}>'

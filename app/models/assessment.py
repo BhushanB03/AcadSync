@@ -27,6 +27,9 @@ class GradeTemplateComponent(db.Model):
     component_name = db.Column(db.String(150), nullable=False)  # e.g., "Group Learning Activities"
     max_marks = db.Column(db.Float, nullable=False)  # e.g., 100.0
     
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
+    
     def __repr__(self):
         return f"<GradeTemplateComponent {self.component_code} (max: {self.max_marks})>"
 
@@ -50,6 +53,9 @@ class GradeTemplateGradeBoundary(db.Model):
     grade_label = db.Column(db.String(10), nullable=False)  # e.g., "S", "A", "B", "C", "D", "E", "U"
     min_score = db.Column(db.Float, nullable=False)  # e.g., 90.0
     max_score = db.Column(db.Float, nullable=False)  # e.g., 100.0
+    
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
     
     def __repr__(self):
         return f"<GradeTemplateGradeBoundary {self.grade_label}: {self.min_score}-{self.max_score}>"
@@ -87,6 +93,9 @@ class SubjectComponent(db.Model):
             return None
         return (self.obtained_marks / self.max_marks) * 100.0 if self.max_marks > 0 else 0.0
     
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
+    
     def __repr__(self):
         return f"<SubjectComponent {self.component_code}: {self.obtained_marks}/{self.max_marks}>"
 
@@ -111,6 +120,9 @@ class SubjectGradeBoundary(db.Model):
     grade_label = db.Column(db.String(10), nullable=False)  # e.g., "S", "A", "B", "C", "D", "E", "U"
     min_score = db.Column(db.Float, nullable=False)  # e.g., 90.0
     max_score = db.Column(db.Float, nullable=False)  # e.g., 100.0
+    
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
     
     def __repr__(self):
         return f"<SubjectGradeBoundary {self.grade_label}: {self.min_score}-{self.max_score}>"

@@ -43,11 +43,18 @@ def create_app():
     from app.routes.materials import materials_bp
     from app.routes.tasks import tasks_bp
     from app.routes.progress import progress_bp
+    from app.routes.ai import ai_bp
     app.register_blueprint(auth_bp)
     app.register_blueprint(subjects_bp)
     app.register_blueprint(grades_bp)
     app.register_blueprint(materials_bp)
     app.register_blueprint(tasks_bp)
     app.register_blueprint(progress_bp)
+    app.register_blueprint(ai_bp)
+
+    # Lazily initialize Gemini client
+    from app.services.ai_service import configure_gemini
+    with app.app_context():
+        configure_gemini()
 
     return app

@@ -27,6 +27,19 @@ class User(UserMixin, db.Model):
         passive_deletes=True
     )
 
+    # Relationship to AI conversations
+    ai_conversations = db.relationship(
+        'AIConversation',
+        backref='user',
+        lazy=True,
+        cascade='all, delete-orphan',
+        passive_deletes=True,
+        order_by='AIConversation.created_at.desc()'
+    )
+
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
+
     def __repr__(self):
         return f'<User {self.email}>'
 
