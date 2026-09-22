@@ -33,6 +33,15 @@ class Subject(db.Model):
         lazy=True,
         passive_deletes=True
     )
+
+    # Important dates linked to this subject. If the subject is deleted,
+    # linked important dates retain their value by clearing the subject_id.
+    important_dates = db.relationship(
+        'ImportantDate',
+        backref='subject',
+        lazy=True,
+        passive_deletes=True
+    )
     
     # Relationships for grade components and boundaries
     components = db.relationship(

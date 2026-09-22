@@ -192,12 +192,18 @@
    ========================================================================== */
 .dashboard-grid {
     display: grid;
-    grid-template-columns: 1.1fr 0.9fr;
-    gap: 2rem;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1.5rem;
     margin-bottom: 2.5rem;
 }
 
-@media (max-width: 960px) {
+@media (max-width: 1280px) {
+    .dashboard-grid {
+        grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+    }
+}
+
+@media (max-width: 768px) {
     .dashboard-grid {
         grid-template-columns: 1fr;
     }
@@ -611,4 +617,109 @@
     .subjects-preview-grid {
         grid-template-columns: 1fr;
     }
+}
+
+/* ==========================================================================
+   IMPORTANT DATES PREVIEW IN DASHBOARD
+   ========================================================================== */
+.dates-preview-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.85rem;
+    margin-bottom: 1.25rem;
+}
+
+.date-preview-item {
+    background: var(--bg-surface-card);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-sm);
+    padding: 1rem 1.1rem;
+    transition: all var(--transition-fast);
+    display: flex;
+    flex-direction: column;
+    gap: 0.6rem;
+    border-left: 4px solid var(--accent);
+}
+
+.date-preview-item:hover {
+    background: var(--bg-surface-hover);
+    border-color: var(--border-color-hover);
+    transform: translateY(-1px);
+}
+
+.date-preview-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 0.75rem;
+    flex-wrap: wrap;
+}
+
+.date-preview-title {
+    font-size: 0.95rem;
+    font-weight: 700;
+    color: var(--text-primary);
+    margin: 0;
+    line-height: 1.4;
+    flex: 1;
+}
+
+.date-due-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    font-size: 0.76rem;
+    font-weight: 600;
+    padding: 0.2rem 0.6rem;
+    border-radius: var(--radius-xs);
+    background: var(--bg-surface-hover);
+    border: 1px solid var(--border-color);
+    color: var(--text-muted);
+    white-space: nowrap;
+}
+
+.date-due-badge.due-today {
+    background: var(--danger-banner-bg);
+    border-color: var(--danger-border);
+    color: var(--danger);
+    font-weight: 700;
+}
+
+.date-due-badge.due-soon {
+    background: var(--warning-subtle);
+    border-color: var(--warning-border);
+    color: var(--warning);
+    font-weight: 700;
+}
+
+.date-preview-bottom {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 0.8rem;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+}
+
+.date-note-box {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.4rem;
+    font-size: 0.78rem;
+    color: var(--text-muted);
+    background: var(--bg-input);
+    border: 1px solid var(--border-color-subtle);
+    border-radius: var(--radius-xs);
+    padding: 0.4rem 0.65rem;
+    margin-top: 0.2rem;
+}
+
+.date-note-box .note-icon {
+    opacity: 0.7;
+    flex-shrink: 0;
+}
+
+.date-note-box .note-text {
+    line-height: 1.35;
+    word-break: break-word;
 }

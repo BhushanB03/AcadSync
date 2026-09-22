@@ -27,6 +27,16 @@ class User(UserMixin, db.Model):
         passive_deletes=True
     )
 
+    # Relationship to important dates for reminders and milestones
+    important_dates = db.relationship(
+        'ImportantDate',
+        backref='user',
+        lazy=True,
+        cascade='all, delete-orphan',
+        passive_deletes=True,
+        order_by='ImportantDate.date.asc()'
+    )
+
     # Relationship to AI conversations
     ai_conversations = db.relationship(
         'AIConversation',

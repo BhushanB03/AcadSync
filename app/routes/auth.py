@@ -6,6 +6,7 @@ from app.extensions import db
 from app.models.user import User
 from app.models.subject import Subject
 from app.models.task import Task
+from app.models.important_date import ImportantDate
 
 auth_bp = Blueprint('auth', __name__)
 
@@ -225,6 +226,31 @@ def dashboard():
         .count()
     )
 
+    # 4. Upcoming important dates per university (date >= today, sorted ascending, limit 5)
+    iitm_important_dates = (
+        ImportantDate.query
+        .filter(
+            ImportantDate.user_id == current_user.id,
+            ImportantDate.university == 'IITM',
+            ImportantDate.date >= today
+        )
+        .order_by(ImportantDate.date.asc(), ImportantDate.created_at.desc())
+        .limit(5)
+        .all()
+    )
+
+    vit_important_dates = (
+        ImportantDate.query
+        .filter(
+            ImportantDate.user_id == current_user.id,
+            ImportantDate.university == 'VIT',
+            ImportantDate.date >= today
+        )
+        .order_by(ImportantDate.date.asc(), ImportantDate.created_at.desc())
+        .limit(5)
+        .all()
+    )
+
     return render_template(
         'dashboard.html',
         user=current_user,
@@ -234,6 +260,8 @@ def dashboard():
         vit_tasks=vit_tasks,
         iitm_overdue_count=iitm_overdue_count,
         vit_overdue_count=vit_overdue_count,
+        iitm_important_dates=iitm_important_dates,
+        vit_important_dates=vit_important_dates,
         today=today,
         timedelta=timedelta
     )

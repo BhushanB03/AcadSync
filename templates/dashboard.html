@@ -156,6 +156,63 @@
             </a>
         </div>
 
+        <!-- Important Dates Card (IITM) -->
+        <div class="dashboard-card">
+            <div class="card-header">
+                <h2>
+                    <span>📅</span> Important Dates
+                </h2>
+                <span class="card-count-badge">{{ iitm_important_dates|length }} Upcoming</span>
+            </div>
+
+            {% if iitm_important_dates %}
+                <div class="dates-preview-list">
+                    {% for item in iitm_important_dates %}
+                        {% set days_left = (item.date - today).days %}
+                        <div class="date-preview-item">
+                            <div class="date-preview-top">
+                                <h3 class="date-preview-title">{{ item.title }}</h3>
+                                <span class="date-due-badge {% if days_left == 0 %}due-today{% elif days_left <= 3 %}due-soon{% endif %}">
+                                    📅 {{ item.date.strftime('%b %d, %Y') }}
+                                    {% if days_left == 0 %}
+                                        (Today)
+                                    {% elif days_left == 1 %}
+                                        (Tomorrow)
+                                    {% elif days_left <= 7 %}
+                                        (In {{ days_left }}d)
+                                    {% endif %}
+                                </span>
+                            </div>
+                            <div class="date-preview-bottom">
+                                <div class="date-scope">
+                                    {% if item.subject %}
+                                        <span class="task-scope-badge">📖 {{ item.subject.name }}</span>
+                                    {% else %}
+                                        <span class="task-scope-badge standalone">🏛️ University-wide</span>
+                                    {% endif %}
+                                </div>
+                            </div>
+                            {% if item.note %}
+                                <div class="date-note-box">
+                                    <span class="note-icon">📝</span>
+                                    <span class="note-text" title="{{ item.note }}">{{ item.note|truncate(90) }}</span>
+                                </div>
+                            {% endif %}
+                        </div>
+                    {% endfor %}
+                </div>
+            {% else %}
+                <div class="empty-box">
+                    <p>No upcoming important dates for IITM.</p>
+                    <a href="{{ url_for('important_dates.add', university='IITM') }}" class="action-btn action-btn-primary" style="display: inline-flex; padding: 0.5rem 1rem; font-size: 0.85rem;">+ Add Important Date</a>
+                </div>
+            {% endif %}
+
+            <a href="{{ url_for('important_dates.index', university='IITM') }}" class="card-view-all">
+                View All IITM Dates &rarr;
+            </a>
+        </div>
+
     </div>
 
     <!-- Quick Actions Bar -->
@@ -167,6 +224,9 @@
             </a>
             <a href="{{ url_for('tasks.add') }}" class="action-btn action-btn-primary">
                 <span>📝</span> Add Task
+            </a>
+            <a href="{{ url_for('important_dates.add', university='IITM') }}" class="action-btn action-btn-secondary" style="border-color: var(--border-color-hover);">
+                <span>📅</span> Add Date
             </a>
             <a href="{{ url_for('ai.chat') }}" class="action-btn action-btn-ai" title="AI Academic Assistant">
                 <span>🤖</span> Ask AI
@@ -288,6 +348,63 @@
             </a>
         </div>
 
+        <!-- Important Dates Card (VIT) -->
+        <div class="dashboard-card">
+            <div class="card-header">
+                <h2>
+                    <span>📅</span> Important Dates
+                </h2>
+                <span class="card-count-badge">{{ vit_important_dates|length }} Upcoming</span>
+            </div>
+
+            {% if vit_important_dates %}
+                <div class="dates-preview-list">
+                    {% for item in vit_important_dates %}
+                        {% set days_left = (item.date - today).days %}
+                        <div class="date-preview-item">
+                            <div class="date-preview-top">
+                                <h3 class="date-preview-title">{{ item.title }}</h3>
+                                <span class="date-due-badge {% if days_left == 0 %}due-today{% elif days_left <= 3 %}due-soon{% endif %}">
+                                    📅 {{ item.date.strftime('%b %d, %Y') }}
+                                    {% if days_left == 0 %}
+                                        (Today)
+                                    {% elif days_left == 1 %}
+                                        (Tomorrow)
+                                    {% elif days_left <= 7 %}
+                                        (In {{ days_left }}d)
+                                    {% endif %}
+                                </span>
+                            </div>
+                            <div class="date-preview-bottom">
+                                <div class="date-scope">
+                                    {% if item.subject %}
+                                        <span class="task-scope-badge">📖 {{ item.subject.name }}</span>
+                                    {% else %}
+                                        <span class="task-scope-badge standalone">🏛️ University-wide</span>
+                                    {% endif %}
+                                </div>
+                            </div>
+                            {% if item.note %}
+                                <div class="date-note-box">
+                                    <span class="note-icon">📝</span>
+                                    <span class="note-text" title="{{ item.note }}">{{ item.note|truncate(90) }}</span>
+                                </div>
+                            {% endif %}
+                        </div>
+                    {% endfor %}
+                </div>
+            {% else %}
+                <div class="empty-box">
+                    <p>No upcoming important dates for VIT.</p>
+                    <a href="{{ url_for('important_dates.add', university='VIT') }}" class="action-btn action-btn-primary" style="display: inline-flex; padding: 0.5rem 1rem; font-size: 0.85rem;">+ Add Important Date</a>
+                </div>
+            {% endif %}
+
+            <a href="{{ url_for('important_dates.index', university='VIT') }}" class="card-view-all">
+                View All VIT Dates &rarr;
+            </a>
+        </div>
+
     </div>
 
     <!-- Quick Actions Bar -->
@@ -299,6 +416,9 @@
             </a>
             <a href="{{ url_for('tasks.add') }}" class="action-btn action-btn-primary">
                 <span>📝</span> Add Task
+            </a>
+            <a href="{{ url_for('important_dates.add', university='VIT') }}" class="action-btn action-btn-secondary" style="border-color: var(--border-color-hover);">
+                <span>📅</span> Add Date
             </a>
             <a href="{{ url_for('ai.chat') }}" class="action-btn action-btn-ai" title="AI Academic Assistant">
                 <span>🤖</span> Ask AI

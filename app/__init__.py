@@ -44,6 +44,7 @@ def create_app():
     from app.routes.tasks import tasks_bp
     from app.routes.progress import progress_bp
     from app.routes.ai import ai_bp
+    from app.routes.important_dates import important_dates_bp
     app.register_blueprint(auth_bp)
     app.register_blueprint(subjects_bp)
     app.register_blueprint(grades_bp)
@@ -51,6 +52,7 @@ def create_app():
     app.register_blueprint(tasks_bp)
     app.register_blueprint(progress_bp)
     app.register_blueprint(ai_bp)
+    app.register_blueprint(important_dates_bp)
 
     # Lazily initialize Gemini client
     from app.services.ai_service import configure_gemini
