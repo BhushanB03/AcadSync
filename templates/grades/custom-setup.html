@@ -559,7 +559,7 @@ function renderFormulaPreview() {
     const preview = document.getElementById('formula-preview');
     if (!textarea || !preview) return;
 
-    const formula = String(textarea.value || '').replace(/,/g, '').trim();
+    const formula = String(textarea.value || '').trim();
     preview.textContent = formula;
 }
 

@@ -577,7 +577,7 @@
 function renderGradeFormula() {
     const preview = document.getElementById('grade-formula-preview');
     if (!preview) return;
-    preview.textContent = String(preview.dataset.formula || '').replace(/,/g, '').trim();
+    preview.textContent = String(preview.dataset.formula || '').trim();
 }
 
 document.addEventListener('DOMContentLoaded', renderGradeFormula);
