@@ -11,6 +11,14 @@ from app.models.important_date import ImportantDate
 auth_bp = Blueprint('auth', __name__)
 
 
+@auth_bp.route('/')
+def index():
+    """
+    Redirect root URL directly to the dashboard page.
+    """
+    return redirect(url_for('auth.dashboard'))
+
+
 @auth_bp.route('/register', methods=['GET', 'POST'])
 def register():
     """
